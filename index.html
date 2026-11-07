@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shift Pay Calculator</title>
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#14202b;--mut:#5d6b78;--line:#dbe1e7;--acc:#0f766e;--accbg:#d9f1ee;--M:#d99a00;--A:#e4572e;--N:#3d4ec9;--O:#9aa6b2;--neg:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e151c;--card:#16212b;--ink:#e8eef3;--mut:#93a3b1;--line:#27343f;--acc:#3cc4b6;--accbg:#12332f;--M:#f0b429;--A:#ff7a59;--N:#8c9bff;--O:#5c6b78;--neg:#ff8a80}}
+:root[data-theme=dark]{--bg:#0e151c;--card:#16212b;--ink:#e8eef3;--mut:#93a3b1;--line:#27343f;--acc:#3cc4b6;--accbg:#12332f;--M:#f0b429;--A:#ff7a59;--N:#8c9bff;--O:#5c6b78;--neg:#ff8a80}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Avenir Next",Avenir,"Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 26px/1.2 Georgia,"Iowan Old Style",serif;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 10px}
+label{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+textarea{min-height:70px;font-size:13px}input[readonly]{opacity:.8;cursor:default}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.leave-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.leave-head h2{margin:0}.icon-actions{display:flex;align-items:center;gap:7px}.icon-btn{width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font-size:21px;line-height:1;cursor:pointer}.icon-btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}.top-actions{display:flex;justify-content:flex-end;gap:7px;margin:0 0 8px}.top-actions button{padding:5px 10px;font-size:12px}.reset-icon{width:32px;height:30px;padding:0;font-size:18px;line-height:1}
+.seg{display:flex;gap:6px}.seg button{flex:1;padding:9px 0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;font:600 15px inherit;cursor:pointer}
+.seg#iyr{margin:0 0 14px}.seg#iyr button{font-size:13px;padding:9px 4px;line-height:1.25;min-width:0}.seg#imode{margin-bottom:12px}.seg button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn{padding:8px 12px;border:0;border-radius:9px;background:var(--acc);color:#fff;font:600 14px inherit;cursor:pointer}
+.salopt{display:flex;gap:8px;align-items:center;margin:8px 0 4px;color:var(--ink);font-size:13px}.salopt input{width:auto}
+.linkbtn{background:none;border:0;padding:0;color:var(--acc);font:600 13px inherit;text-decoration:underline;cursor:pointer}
+.lv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px;background:var(--bg)}.lvh{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}.lvh b{font-size:15px}
+.tag{font-size:12px;font-weight:700;border-radius:20px;padding:2px 10px;background:var(--accbg)}.lv .acts{margin-top:8px}.lv .btn{padding:6px 12px;font-size:13px}.lv p{margin:4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:var(--accbg);border-radius:20px;padding:3px 6px 3px 10px;font-size:12.5px}
+.chip button{border:0;background:none;color:inherit;cursor:pointer;font-size:15px}
+.net{background:var(--acc);color:#fff;border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.net small{opacity:.85}.net b{display:block;font:600 58px/1.05 "Iowan Old Style","Palatino Linotype",Georgia,serif;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:lining-nums tabular-nums}.net .cur{font:600 17px/1 "Avenir Next",system-ui,sans-serif;letter-spacing:.14em;margin-left:6px}@media(max-width:420px){.net b{font-size:44px}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.stat b{display:block;font-size:20px}.stat span{color:var(--mut);font-size:12px}
+table{width:100%;border-collapse:collapse}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+th{color:var(--mut);font-weight:500;font-size:12.5px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.grp td{font-weight:700;border-bottom:2px solid var(--line);padding-top:14px}tr.tot td{font-weight:700;font-size:16px;border-bottom:0}
+.neg{color:var(--neg)}.sm{color:var(--mut);font-size:12.5px}
+.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 6px;text-align:center;font-size:11px;font-weight:700;color:var(--mut)}.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.d{border:0;border-radius:10px;padding:5px 2px;text-align:center;font:inherit;font-size:11.5px;color:#fff;position:relative;cursor:pointer;min-height:64px}.d b{display:block;font-size:16px}.d{display:flex;flex-direction:column;overflow:hidden}.d .daylabel{font-size:10px;line-height:1.15;white-space:nowrap}.d em{display:block;font-style:normal;font-size:10.5px;min-height:13px;margin-top:auto}.d em.tg{margin:3px -2px -5px;padding:3px 1px;background:var(--H,#ffe0b1);color:#111;font-weight:600}.hp{background:var(--H,#0003);color:#111;border-radius:6px;padding:0 5px}.d:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.d.M{background:var(--M)}.d.A{background:var(--A)}.d.N{background:var(--N)}.d.O{background:var(--O)}
+.d.H{}.d.rm{box-shadow:inset 0 0 0 2px #d4a017}.d.L{opacity:.35;text-decoration:line-through}
+.key{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mut)}.key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.caut{margin:10px 0 0;padding:10px 12px;border-radius:10px;border:1px solid #d99a00;background:rgba(217,154,0,.12);font-size:12.5px;color:var(--ink)}
+.mini{width:100%;max-width:520px;border-collapse:collapse;font-size:13px}.mini td{padding:4px 8px;border-bottom:1px solid var(--line)}.mini tr.tot td{font-weight:700}tr.det>td{background:var(--bg)}
+.balbox{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 12px}.balbox span{font-weight:700;font-size:15px}.balbox b{font-size:40px;line-height:1;color:var(--acc)}.balbox.neg b{color:var(--neg)}.balbox small{color:var(--mut);font-size:12.5px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}.tile b{display:block;font-size:20px}.tile span{color:var(--mut);font-size:12px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:18px;width:min(340px,92vw)}dialog::backdrop{background:#0008}.acts{display:flex;gap:8px;margin-top:14px}.btn.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}.btn.danger{color:var(--neg);border-color:var(--neg)}
+[hidden]{display:none!important}#tabs{max-width:440px;margin:0 0 16px}#tabs button{padding:10px 0}.pt td{padding:6px 4px}.pt tr.tot td{border-top:1px solid var(--line)}
+details summary{cursor:pointer;font-weight:600}
+.page-tabs{display:flex;gap:6px;margin:18px 0 16px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:12px;max-width:680px}
+.page-tabs button{flex:1;border:0;border-radius:8px;padding:11px 6px;background:transparent;color:var(--mut);font:600 14px inherit;cursor:pointer}
+.page-tabs button[aria-selected=true]{background:var(--acc);color:#fff}
+.exp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
+@media(max-width:700px){.exp-grid{grid-template-columns:1fr}}
+.exp-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.exp-card h2{font-size:15px;margin:0 0 8px}
+.exp-card .hint{color:var(--mut);font-size:12px;margin:0 0 6px}
+.exp-total{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.exp-result{background:var(--accbg);border-radius:9px;padding:9px 10px;margin-top:8px}
+.exp-result span{display:block;color:var(--mut);font-size:12px}
+.exp-result b{font-size:22px;font-variant-numeric:tabular-nums}
+.exp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.exp-actions button{padding:7px 10px}
+.exp-card input{margin-bottom:2px}.field-reset{display:flex;align-items:center;gap:6px}.field-reset input{flex:1;min-width:0}.field-reset button{flex:0 0 32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:18px;cursor:pointer}.activity-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.activity-row .entry-main{min-width:0}.activity-row .entry-title{font-weight:650;margin:0 0 5px}.activity-row label{margin-top:0}.entry-tools{display:flex;gap:5px;align-items:center}.entry-tools button{width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}.entry-tools .delete-entry{color:var(--neg)}.entry-save{font-size:12px;color:var(--mut);margin-top:5px}.save-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.exp-foot{color:var(--mut);font-size:12px;margin-top:10px}
+
+.account-allocation{margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+.account-allocation h3{font-size:13px;margin:0 0 6px}
+.allocation-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,0.9fr);gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.allocation-name b{display:block;font-size:13px}.allocation-name span{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+.allocation-input label{display:block;font-size:11px;color:var(--mut);margin:0 0 3px}
+.allocation-input input{margin:0}.allocation-value{display:block;padding:4px 0;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}.proj-label{font-size:12px;color:var(--mut)}.proj{font-size:24px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;margin-bottom:4px}
+@media(max-width:430px){.allocation-row{grid-template-columns:1fr;gap:5px}}
+.exp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.exp-col{display:flex;flex-direction:column;gap:14px;min-width:0}.exp-col .exp-card{margin:0}@media(max-width:820px){.exp-grid{grid-template-columns:1fr}}.save-bar{display:flex;justify-content:flex-end;margin-top:14px}#dataTable th{white-space:normal}#dataTable td{white-space:nowrap}#dataTable tr.hi td{background:var(--accbg)}
+.banner{background:var(--card);border:2px solid var(--M);border-radius:12px;padding:10px 12px;margin:0 0 14px;font-size:14px}.bk{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.bk .btn{margin:0}textarea#bkText{min-height:90px;margin-top:8px}.foot{color:var(--mut);font-size:12px;margin:18px 0 0;text-align:center}
+</style></head><body><div class="wrap">
+<h1>Shift pay calculator</h1><p class="sub">Estimate your monthly salary and plan your expenditure. <span style="opacity:.55;font-size:11px">Version 7 Nov 2026 (D)</span></p>
+<div id="banner" class="banner" hidden></div>
+<div class="page-tabs" role="tablist" aria-label="Calculator pages"><button type="button" id="salaryTab" role="tab" aria-selected="true" aria-controls="calc">Salary (Predicted)</button><button type="button" id="leaveTab" role="tab" aria-selected="false" aria-controls="leavepage">Leaves</button><button type="button" id="expenditureTab" role="tab" aria-selected="false" aria-controls="expenditure">Expenditure (Estimated)</button><button type="button" id="dataTab" role="tab" aria-selected="false" aria-controls="datapage">Data (Saved)</button></div>
+<div id="calc" role="tabpanel" aria-labelledby="salaryTab"><div class="grid"><div>
+<div class="card"><h2>Month and group</h2>
+<label for="mon">Payroll month</label><input id="mon" type="month">
+<label>Shift group</label><div class="seg" id="grp"></div>
+<label>Shift timing</label><div class="seg" id="shs"></div></div>
+<div class="card"><h2>Basic salary</h2><div class="tile"><b id="bnowv"></b></div>
+<div class="acts"><button class="btn" id="iopen" type="button">+ Add increment</button><button class="btn alt" id="bedit" type="button">Edit basic salary</button></div></div>
+<div class="card"><h2>Add leave</h2><div class="row"><div><label for="ld">From</label><input id="ld" type="date"></div><div><label for="le">To</label><input id="le" type="date"></div></div>
+<div class="row" style="align-items:end"><div><label for="lt">Type</label><select id="lt"><option value="vac">Vacation</option><option value="sick">Sick</option><option value="comp">Compassionate</option></select></div><button class="btn" id="ladd" type="button">Add leave</button></div>
+<p class="sm" id="lvHint"></p><p class="sm" id="lvMsg" style="margin:4px 0 0"></p>
+<p class="sm" style="margin:10px 0 0">Leave in this pay period: <b id="lvSum">none</b>. <button class="linkbtn" id="lvGo" type="button">View all leave records</button></p></div>
+<div class="card"><h2>Overtime and other pay</h2><div class="tiles" style="grid-template-columns:repeat(3,1fr)"><div class="tile"><b id="tdo">0</b><span>Morning OT hrs</span></div><div class="tile"><b id="tao">0</b><span>Afternoon OT hrs</span></div><div class="tile"><b id="tno">0</b><span>Night OT hrs</span></div></div><p class="sm">Click a date in the duty calendar to add overtime.</p><div id="otList"></div>
+</div>
+
+<div class="card"><h2>Additional earnings and deductions</h2>
+<div class="row"><div><label for="ticket">Air ticket (KWD)</label><input id="ticket" type="number" min="0" step="0.001"></div><div><label for="bonus">Bonus (KWD)</label><input id="bonus" type="number" min="0" step="0.001"></div></div>
+<div class="row"><div><label for="schoolclaim">School fee claim (KWD)</label><input id="schoolclaim" type="number" min="0" step="0.001"></div><div><label for="companyloan">Company loan EMI (KWD)</label><input id="companyloan" type="number" min="0" step="0.001"></div></div>
+<div class="row"><div><label for="bankloan">Bank loan EMI (KWD)</label><input id="bankloan" type="number" min="0" step="0.001"></div><div><label for="rent">Rent (KWD)</label><input id="rent" type="number" min="0" step="0.001" placeholder="Enter rent amount"></div></div>
+<p class="sm">Air ticket, bonus and school fee claim are added to earnings. Company loan EMI is deducted from salary in hand. Bank loan EMI and rent are deducted afterward to show the remaining amount. Company loan EMI, bank loan EMI and rent repeat every month until you change them (type 0 when a loan ends).</p></div>
+</div><div>
+<div class="top-actions"><button class="btn alt" id="cmon" type="button">clear</button><button class="btn alt reset-icon" id="rall" type="button" aria-label="Reset everything" title="Reset everything">↺</button></div>
+<div class="net"><small id="netl">Salary in hand</small><b id="net">0.000</b></div>
+<p class="caut"><b>Caution:</b> this is an estimate, not a pay advice. Overtime approvals, leave and company decisions can change the real amount. Please do not spend or commit money based on it before the salary is credited to your account.</p>
+<div class="card"><h2>Pay breakdown</h2><table id="tb"></table></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px"><h2 style="margin:0">Duty calendar for the period</h2><button class="btn alt" id="ramBtn" type="button">Ramadan days</button></div><p class="sm" style="margin:0 0 10px">Click a date to mark a holiday or rest day, or to add overtime hours.</p><p class="sm" id="ramNote" style="margin:0 0 10px;display:none;padding:8px 10px;border-radius:8px;background:var(--card2,#f3efe3);border-left:4px solid #b8860b"></p><div class="weekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="cal" id="cal"></div>
+<div class="key"><span><i style="background:var(--M)"></i>Morning 7–3</span><span><i style="background:var(--A)"></i>Afternoon 3–11</span><span><i style="background:var(--N)"></i>Night 11–7</span><span><i style="background:var(--O)"></i>Off</span><span>Peach tag: holiday or overtime hours</span><span>Faded: leave</span><span>M, A, N: morning, afternoon and night overtime hours</span></div></div>
+</div></div></div>
+
+<section id="leavepage" role="tabpanel" aria-labelledby="leaveTab" hidden><div class="grid"><div>
+<div class="card"><div class="leave-head"><h2>Leave entitlement</h2><div class="icon-actions"><button class="icon-btn primary" id="leaveAddOpen" type="button" aria-label="Add annual leave entitlement" title="Add annual leave entitlement">+</button><button class="icon-btn" id="leaveReset" type="button" aria-label="Reset leave entitlement" title="Reset leave entitlement">↺</button></div></div>
+<div class="row">
+ <div><label for="leaveOpening">Opening leave balance</label><input id="leaveOpening" type="number" min="0" step="0.5" aria-label="Opening leave balance in days"></div>
+</div>
+<div class="row"><div><label for="leaveFrom">Opening balance as on</label><input id="leaveFrom" type="date"></div></div>
+<p class="sm" style="margin:10px 0 0">Fridays and public holidays marked on the duty calendar are not deducted from vacation. Mark holidays on the calendar so they are skipped.</p></div>
+</div><div>
+<div class="card"><div class="leave-head"><h2>Leave records</h2><select id="lvYear" aria-label="Show year" style="width:auto"></select></div>
+<div class="balbox" id="balbox"><span>Leave Balance</span><b id="leaveBal">–</b><small id="leaveBalNote"></small></div>
+<div class="tiles" style="grid-template-columns:repeat(3,1fr)"><div class="tile"><b id="lvV">0</b><span id="lvVl">Vacation days</span></div><div class="tile"><b id="lvS">0</b><span>Sick days</span></div><div class="tile"><b id="lvC">0</b><span>Compassionate days</span></div></div>
+<div id="lvWarn"></div><div id="lvList"></div></div>
+
+</div></div></section>
+
+<section id="expenditure" role="tabpanel" aria-labelledby="expenditureTab" hidden>
+ <p class="caut"><b>Caution:</b> these figures depend on the predicted salary. Do not spend or transfer money from it before the salary is actually credited.</p>
+ <p class="sm" id="expMonth" style="margin:0 0 12px"></p>
+ <div class="exp-grid">
+  <div class="exp-col">
+   <div class="exp-card"><h2>Credit cards</h2><p class="hint">Cards stay until you delete them. The limit left carries forward until you change it.</p>
+    <div id="cardList"></div><div class="exp-actions"><button class="btn" type="button" id="addCard">+ Add credit card</button></div>
+    <div class="exp-result"><span>Total to be paid on credit cards</span><b id="ccPaid">0.000 KWD</b></div></div>
+   <div class="exp-card"><h2>Accounts</h2><p class="hint">Accounts stay until you delete them. Balances and saving amounts carry forward. Type a new amount to replace the carried one.</p>
+    <div id="accountList"></div><div class="exp-actions"><button class="btn" type="button" id="addAccount">+ Add account</button></div>
+    <div class="exp-result"><span>Total opening balances</span><b id="accountBalanceTotal">0.000 KWD</b></div></div>
+   <div class="exp-card"><h2>Monthly expenses</h2><p class="hint">School fee, electricity and pocket money carry forward until you change them. Gift applies to this month only.</p>
+    <div class="row"><div><label for="exSchool">School fee</label><input id="exSchool" type="number" min="0" step="0.001"></div><div><label for="exElectricity">Electricity</label><input id="exElectricity" type="number" min="0" step="0.001"></div></div>
+    <div class="row"><div><label for="exGift">Gift</label><input id="exGift" type="number" min="0" step="0.001"></div><div><label for="exPocket">Pocket money</label><input id="exPocket" type="number" min="0" step="0.001"></div></div>
+    <div class="exp-result"><span>Total monthly expenses</span><b id="monthlyTotal">0.000 KWD</b></div></div>
+  </div>
+  <div class="exp-col">
+   <div class="exp-card"><h2>Extra-curricular activities</h2><p class="hint">Activities stay and repeat every month until you delete them.</p>
+    <div id="activityList"></div><div class="exp-actions"><button class="btn" type="button" id="addActivity">+ Add activity</button></div>
+    <div class="exp-result"><span>Total extra-curricular expenses</span><b id="activityTotal">0.000 KWD</b></div></div>
+   <div class="exp-card"><h2>Yearly payments</h2><p class="hint">Add a payment with the month it falls in. It is included in that month, and the page shows what to set aside each month.</p>
+    <div class="row"><input id="yrn" placeholder="Name, e.g. Insurance"><input id="yra" type="number" min="0" step="0.001" placeholder="Amount"></div>
+    <label for="yrmn">Month</label><input id="yrmn" type="month"><div class="exp-actions"><button class="btn" type="button" id="yradd">Add</button></div><div class="chips" id="yrl"></div>
+    <div class="exp-result"><span>Set aside each month for the next 12 months</span><b id="setAside">0.000 KWD</b></div></div>
+   <div class="exp-card"><h2>Estimated expenditure summary</h2><div id="sumBox"></div>
+    <div class="account-allocation"><h3>Account allocation</h3><div id="allocList"></div><p class="exp-foot">The salary account keeps what remains after the amounts moved to the other accounts. Leave the other accounts at 0 if you save in the salary account.</p></div>
+    <p class="neg" id="short" style="margin:10px 0 0"></p><div id="shortAct" class="bk"></div>
+    <div class="save-bar"><button class="btn" type="button" id="saveData">Save data</button></div></div>
+  </div>
+ </div>
+</section>
+<section id="datapage" role="tabpanel" aria-labelledby="dataTab" hidden>
+ <div class="card"><h2>Saved monthly data</h2><p class="sm" id="dataNote"></p><p class="sm">Actual vs plan: the balance you typed as this month's opening balance minus what last month's plan predicted. A minus figure is money spent that was not in the plan. It only appears when you typed the real balance.</p><div style="overflow-x:auto"><table id="dataTable"></table></div></div>
+ <div class="card"><h2>Backup and restore</h2><p class="sm" id="bkStatus"></p>
+  <p class="sm">Your data is stored only in this browser on this device. If the browser data is cleared or the device is lost, it is gone. A backup file is a copy you keep somewhere safe, such as cloud storage or email to yourself. <b>A backup contains all your salary and expense data, so do not share it.</b></p>
+  <div class="bk"><button class="btn" id="bkDl" type="button">Download backup</button><label class="btn alt" for="bkFile" style="cursor:pointer">Restore from file</label><input id="bkFile" type="file" accept=".json,application/json" hidden><button class="btn alt" id="bkCsv" type="button">Export saved months (CSV)</button></div>
+  <p class="neg" id="bkMsg" style="margin:8px 0 0"></p>
+  <details style="margin-top:10px"><summary>Backup as text (if file download does not work)</summary><div class="bk"><button class="btn alt" id="bkShow" type="button">Show backup text</button><button class="btn alt" id="bkRestoreText" type="button">Restore from text</button></div><textarea id="bkText" placeholder="Backup text appears here. To restore, paste it here."></textarea></details></div>
+</section>
+<p class="foot">Your data stays on this device. This file contains no personal data and uses no internet connection.</p>
+
+<dialog id="tdlg"><h2 style="margin:0 0 6px">Transfer to the salary account</h2><p class="sm" id="tmsg"></p><label for="tfrom">Take money from</label><select id="tfrom"></select><label for="tamt">Amount to transfer (KWD)</label><input id="tamt" type="number" min="0" step="0.001"><p class="neg sm" id="terr"></p><div class="acts"><button class="btn" id="tgo" type="button">Transfer</button><button class="btn alt" id="tCancel" type="button">Not now</button></div></dialog>
+<dialog id="lvDlg"><h2 style="margin:0 0 6px">Replace leave</h2><p class="sm" id="lvOld"></p><label for="lvs">From</label><input id="lvs" type="date"><label for="lve">To</label><input id="lve" type="date"><label for="lvt">Type</label><select id="lvt"><option value="vac">Vacation</option><option value="sick">Sick</option><option value="comp">Compassionate</option></select><p class="neg sm" id="lvEMsg"></p><div class="acts"><button class="btn" id="lvSave" type="button">Save</button><button class="btn alt" id="lvCancel" type="button">Cancel</button></div></dialog>
+<dialog id="rdlg"><h2 style="margin:0 0 6px">Ramadan days</h2><label for="rs2">Start date</label><input id="rs2" type="date"><label for="re2">End date</label><input id="re2" type="date"><div class="acts"><button class="btn" id="rsave" type="button">Save</button><button class="btn alt" id="rclear" type="button">Clear</button><button class="btn alt" id="rcancel" type="button">Cancel</button></div></dialog>
+<dialog id="dlg"><h2 id="dt" style="margin:0 0 6px"></h2><div class="row" style="margin-top:6px"><label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px;margin:0"><input id="dh" type="checkbox" style="width:auto"> Public holiday</label><label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px;margin:0"><input id="dr" type="checkbox" style="width:auto"> Rest day</label></div>
+<div class="row"><div><label for="dd">Morning overtime (hrs)</label><input id="dd" type="number" step="0.01" min="0"></div><div><label for="da">Afternoon overtime (hrs)</label><input id="da" type="number" step="0.01" min="0"></div></div>
+<div class="row"><div><label for="dn">Night overtime (hrs)</label><input id="dn" type="number" step="0.01" min="0"></div><div></div></div>
+<label for="dp">When is this overtime paid?</label><select id="dp"></select><p class="sm">Overtime is added to the salary only after approval. If it was approved late, choose the month it was paid in. If it is not approved yet, choose Waiting.</p>
+<div class="acts"><button class="btn" id="dsave" type="button">Save</button><button class="btn alt" id="dcancel" type="button">Cancel</button></div></dialog>
+<dialog id="idlg"><h2 style="margin:0 0 8px">Add increment</h2><p class="sm" style="margin:0 0 6px"><b>Financial year</b></p><div class="seg" id="iyr"><button type="button" data-y="0" aria-pressed="true"></button><button type="button" data-y="1" aria-pressed="false"></button></div><div class="seg" id="imode"><button type="button" data-m="p" aria-pressed="true">Percent</button><button type="button" data-m="a" aria-pressed="false">Amount</button></div>
+<label for="iv" id="ivl">Increment (%)</label><input id="iv" type="number" step="0.001" min="0"><p class="sm" id="iwhen"></p><p class="sm" id="iprev"></p>
+<div class="acts"><button class="btn" id="isave" type="button">Apply</button><button class="btn alt" id="icancel" type="button">Cancel</button></div></dialog>
+<dialog id="cdlg"><h2 id="ct" style="margin:0 0 8px"></h2><p id="cb" style="font-size:14px;margin:0"></p><div class="acts"><button class="btn alt" id="cno" type="button" autofocus>Cancel</button><button class="btn alt danger" id="cyes" type="button"></button></div></dialog>
+<dialog id="sdlg"><h2 style="margin:0 0 6px">Set up</h2><p class="foot" style="margin:0 0 6px">Saved only on this device. You can change these later.</p>
+<label>Shift timing</label><div class="seg" id="sSh"></div>
+<label>Shift group</label><div class="seg" id="sG"></div>
+<label for="sBase">Basic salary (KWD)</label><input id="sBase" type="number" step="0.001" inputmode="decimal">
+<div class="acts"><button class="btn" id="sOk" type="button">Start</button></div></dialog>
+<dialog id="bdlg"><h2 style="margin:0 0 6px" id="bt">Basic salary</h2><label for="base">Applies to every month of this financial year (KWD)</label><input id="base" type="number" step="0.001"><div class="acts"><button class="btn" id="bsave" type="button">Save</button><button class="btn alt" id="bclear" type="button">Clear</button><button class="btn alt" id="bcancel" type="button">Cancel</button></div></dialog>
+<dialog id="entryDlg">
+ <h2 id="entryDialogTitle" style="margin:0 0 8px">Add item</h2>
+ <label for="entryName">Name</label><input id="entryName" type="text" maxlength="40" placeholder="Enter name">
+ <label for="entryAmount" id="entryAmountLabel">Amount (KWD)</label><input id="entryAmount" type="number" min="0" step="0.001" placeholder="0.000">
+ <div class="acts"><button class="btn" id="entryConfirm" type="button">Add</button><button class="btn alt" id="entryCancel" type="button">Cancel</button></div>
+</dialog>
+<dialog id="leaveDlg"><h2 style="margin:0 0 8px">Add annual leave entitlement</h2><label for="newLeaveDays">Additional leave days</label><input id="newLeaveDays" type="number" min="0.5" step="0.5" placeholder="Enter number of days"><p class="sm" id="leaveCreditInfo">This entitlement will be credited on 1 January each year, beginning with the next eligible 1 January.</p><div class="acts"><button class="btn" id="leaveConfirm" type="button">Continue</button><button class="btn alt" id="leaveCancel" type="button">Cancel</button></div></dialog>
+<script>
+//ENGINE
+const PAT=['M','M','A','A','N','N','O','O'],START={C:0,B:2,D:4,A:6},DAY=864e5,REF=Date.UTC(2026,9,30);
+const D=s=>{const[y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};
+const iso=t=>new Date(t).toISOString().slice(0,10);
+const shiftOf=(g,t)=>PAT[(((Math.round((t-REF)/DAY)+START[g])%8)+8)%8];
+const hoursOn=(g,t,sh)=>{sh=sh||7;const s=shiftOf(g,t);return(s=='M'||s=='A'?8:s=='N'?8-sh:0)+(shiftOf(g,t-DAY)=='N'?sh:0)};
+const pmOf=k=>{let y=+k.slice(0,4),m=+k.slice(5,7);if(+k.slice(8)>=19){m++;if(m>12){m=1;y++}}return y+'-'+String(m).padStart(2,'0')};
+const r3=x=>Math.round(x*1000+1e-7)/1000;
+function calc(i){
+ const Y=i.year,M=i.month,start=Date.UTC(Y,M-2,19),end=Date.UTC(Y,M-1,18),days=(end-start)/DAY+1;
+ const lv={};i.leave.forEach(l=>{const t=D(l.d);if(t>=start&&t<=end)lv[l.d]=l.t});
+ const nL=Object.keys(lv).length,nC=Object.values(lv).filter(x=>x=='comp').length,dim=new Date(Y,M,0).getDate(),div=i.div||208;
+ const bAt=t=>i.otBasic||(i.basicAt?i.basicAt(t):i.basic),Rt=t=>{const h=(bAt(t)+631)/div;return{d:1.5*h,n:1.8*h,x:2.4*h,c:((i.basicAt?i.basicAt(t):i.basic)+631)*12/365}},hr=(bAt(end)+631)/div,dfRate=1.8*(i.basic+631)/div;
+ const paid=days-nL,dfH=Math.round(paid/7*100)/100*2;
+ const SH=i.sh==6?6:7;let hol=0,rest=0,rd=0,rn=0,sd=0,sn=0,holA=0,restA=0,rdA=0,rnA=0,sdA=0,snA=0,cal=[];
+ for(let t=start;t<=end;t+=DAY){const k=iso(t),s=shiftOf(i.group,t),H=i.holidays.has(k),L=k in lv;const R=!!(i.rest&&i.rest.has(k));cal.push({k,s,H,L,R});
+  if(L)continue;const q=Rt(t);
+  if(R){const p=shiftOf(i.group,t-DAY);let a=0,b=0;if(s=='M')a+=8;if(s=='A'){a+=11-SH;b+=SH-3}if(s=='N')b+=8-SH;if(p=='N'){b+=6;a+=SH-6}sd+=a;sn+=b;sdA+=a*q.d;snA+=b*q.n}
+  if(H){const h=hoursOn(i.group,t,SH);hol+=h;holA+=h*q.x;if(h==0){rest++;restA+=q.c}}
+  const r=i.ram[0]&&t>=D(i.ram[0])&&t<=D(i.ram[1]);
+  if(r&&!(i.skip&&H&&(s=='M'||s=='A'))){let a=0,b=0;if(s=='M')a=2;if(s=='A')b=2;if(s=='N'){a=1;b=1}rd+=a;rn+=b;rdA+=a*q.d;rnA+=b*q.n}}
+ let mdH=0,mdA=0,maH=0,maA=0,mnH=0,mnA=0;
+ if(i.otDays){const PMK=Y+'-'+String(M).padStart(2,'0'),lvAll=new Set(i.leave.map(l=>l.d));for(const k in i.otDays){const o=i.otDays[k];if(!o||o.pay=='wait'||(o.pay||pmOf(k))!=PMK||lvAll.has(k))continue;const q=Rt(D(k));mdH+=o.d||0;mdA+=(o.d||0)*q.d;maH+=o.a||0;maA+=(o.a||0)*q.n;mnH+=o.n||0;mnA+=(o.n||0)*q.n}}
+ else{const q=Rt(end);mdH=i.dayOT||0;mdA=mdH*q.d;maH=i.aftOT||0;maA=maH*q.n;mnH=i.nightOT||0;mnA=mnH*q.n}
+ const L=[],add=(g,n,h,a)=>{if(a)L.push({g,n,h,a:r3(a)})};
+ add('Fixed','Basic salary',0,i.basic);add('Fixed','COLA',0,77);add('Fixed','Increase in COLA',0,50);add('Fixed','Housing allowance',0,150);add('Fixed','Monthly housing grant',0,230);add('Fixed','Transport allowance',0,54);
+ add('Leave-adjusted','Nature of work allowance',0,200*(dim-nL)/dim);add('Leave-adjusted','Shift allowance',0,days==30?100*(30-nC)/30:Math.round(100*(days-nC)/days*100)/100);add('Leave-adjusted','Shift differential',dfH,dfH*dfRate);
+ add('Overtime','Morning overtime',mdH,mdA);add('Overtime','Afternoon overtime',maH,maA);add('Overtime','Night overtime',mnH,mnA);
+ add('Overtime','Holiday overtime',hol,holA);add('Overtime','Rest day compensation',rest,restA);
+ add('Overtime','Statutory day overtime',sd,sdA);add('Overtime','Statutory night overtime',sn,snA);add('Overtime','Ramadan day overtime',rd,rdA);add('Overtime','Ramadan night overtime',rn,rnA);add('Other','Other earnings',0,i.extra);
+ add('Additional earnings','Air ticket',0,i.ticket);add('Additional earnings','Bonus',0,i.bonus);add('Additional earnings','School fee claim',0,i.schoolclaim);
+ const gross=r3(L.reduce((s,x)=>s+x.a,0)),otherDed=r3(i.ded||0),companyLoan=r3(i.companyloan||0),ded=r3(otherDed+companyLoan);
+ return{L,gross,ded,otherDed,companyLoan,net:r3(gross-ded),days,paid,nL,hol,rd,rn,cal,start,end,hr};
+}
+///ENGINE
+const $=id=>document.getElementById(id),f3=x=>x.toLocaleString('en',{minimumFractionDigits:3,maximumFractionDigits:3});
+const MN='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),dm=k=>k.slice(8)+'-'+MN[+k.slice(5,7)-1],wd=k=>['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date(D(k)).getUTCDay()];
+const defMon=()=>{const d=new Date();let y=d.getFullYear(),m=d.getMonth()+1;if(d.getDate()>=19){m++;if(m>12){m=1;y++}}return y+'-'+String(m).padStart(2,'0')};
+const S={fy:{},hol:[],ot:{},leave:[],G:'A',sh:7,mon:defMon(),rs:'',re:'',ext:0,ded:0,div:208,otb:0,skip:true,monthData:{},leaveOpening:0,annualLeave:0,creditYear:+defMon().slice(0,4)+1};
+S.monthData=S.monthData||{};S.leaveOpening=S.leaveOpening??S.leaveTotal??0;S.annualLeave=S.annualLeave??0;S.creditYear=S.creditYear??2027;
+const md=()=>{if(!S.monthData[S.mon]){const prev=Object.keys(S.monthData).filter(k=>k<S.mon).sort().pop(),p=prev?S.monthData[prev]:{};S.monthData[S.mon]={ticket:0,bonus:0,schoolclaim:0,companyloan:p.companyloan??0,bankloan:p.bankloan??0,rent:p.rent??0}}return S.monthData[S.mon]};
+const SK='shiftpay';let storageOK=true,loadMsg='';
+try{localStorage.setItem(SK+'_t','1');localStorage.removeItem(SK+'_t')}catch(e){storageOK=false}
+try{const raw=localStorage.getItem(SK);if(raw){try{const o=JSON.parse(raw);for(const k of Object.keys(o))if(!['__proto__','constructor','prototype'].includes(k))S[k]=o[k]}catch(e){
+ try{localStorage.setItem(SK+'_corrupt',raw)}catch(e3){}
+ const sn=localStorage.getItem(SK+'_snap');loadMsg='Your saved data could not be read.';
+ if(sn){try{const o=JSON.parse(sn);for(const k of Object.keys(o))if(!['__proto__','constructor','prototype'].includes(k))S[k]=o[k];loadMsg+=' Yesterday\'s automatic copy was loaded instead. Please check it.'}catch(e2){loadMsg+=' Use Restore from file if you have a backup.'}}else loadMsg+=' Use Restore from file if you have a backup.'}}}catch(e){}
+const DEF={M:'#e17b7b',A:'#62baa2',N:'#d9dd96',O:'#ffebdb',H:'#ffe0b1'};
+S.col={...DEF,...(S.col||{})};
+delete S.plan;delete S.expenditure;S.pm=S.pm||{};S.acc=S.acc||[];S.act=S.act||[];S.yr=S.yr||[];S.cards=S.cards||[];S.rest=S.rest||[];S.data=S.data||{};
+if(S.ccLimit!==''&&S.ccLimit!=null&&!S.cards.length)S.cards.push({id:'card-1',name:'Credit card',limit:+S.ccLimit||0});
+for(const k in S.pm){const r=S.pm[k];if(!r)continue;delete r.rem;if(typeof r.cc=='number'){if(S.cards.length)r.cc={[S.cards[0].id]:r.cc};else delete r.cc}}
+delete S.ccLimit;delete S.rate;delete S.sc;delete S.ex;S.leaveFrom=S.leaveFrom??'';S.leaveFri=true;
+// Migrate the earlier single annual-credit setting into a dated credit schedule.
+if(!Array.isArray(S.leaveCredits)){const oldDays=+(S.annualLeave||0),oldYear=+(S.creditYear||2027);S.leaveCredits=oldDays>0?[{days:oldDays,startYear:oldYear}]:[]}
+S.leaveOpening=S.leaveOpening??0;
+{const m=new Map();(S.leave||[]).forEach(l=>m.set(l.d,l));S.leave=[...m.values()]}
+delete S.annualLeave;delete S.creditYear;
+if(S.v!=3){delete S.base;delete S.incs;S.v=3}
+const today=()=>new Date().toISOString().slice(0,10);
+const save=()=>{try{const prev=localStorage.getItem(SK);if(prev&&localStorage.getItem(SK+'_day')!==today()){localStorage.setItem(SK+'_snap',prev);localStorage.setItem(SK+'_day',today())}localStorage.setItem(SK,JSON.stringify(S))}catch(e){if(storageOK){storageOK=false;try{updBanner()}catch(e2){}}}};
+const fyOf=m=>+m.slice(0,4)-(+m.slice(5,7)<4?1:0),basicFor=m=>{const f=fyOf(m),ks=Object.keys(S.fy).map(Number).sort((a,b)=>a-b);if(!ks.length)return 0;const k=ks.filter(x=>x<=f).pop();return S.fy[k==null?ks[0]:k]},v=id=>parseFloat($(id).value)||0;
+S.ext=0;S.ded=0;const bind={mon:'mon'};S.otb=0;S.div=208;S.skip=true;
+for(const k in bind){$(k).value=S[k];$(k).addEventListener('input',()=>{S[k]=['mon','rs','re'].includes(k)?$(k).value:v(k);if(k=='mon')loadMonthFields();save();run()})}
+const moneyFields=['ticket','bonus','schoolclaim','companyloan','bankloan','rent'];
+const nk=m=>{let[y,n]=m.split('-').map(Number);n++;if(n>12){n=1;y++}return y+'-'+String(n).padStart(2,'0')},pk=m=>{let[y,n]=m.split('-').map(Number);n--;if(!n){n=12;y--}return y+'-'+String(n).padStart(2,'0')};
+if(S.leaveFrom&&S.leaveFrom.length==7)S.leaveFrom=pk(S.leaveFrom)+'-19';
+function leaveBalance(raw,upto){const st=S.leaveFrom;if(!st)return null;
+ if(!upto){const[y,m]=S.mon.split('-').map(Number);upto=iso(Date.UTC(y,m-1,18));const lv=S.leave.filter(l=>l.t=='vac').map(l=>l.d).sort().pop();if(lv&&lv>upto)upto=lv}
+ if(upto<st)return null;let b=+S.leaveOpening||0;
+ for(let y=+st.slice(0,4)+1;y<=+upto.slice(0,4);y++)b+=S.leaveCredits.filter(c=>y>=c.startYear).reduce((n,c)=>n+(+c.days||0),0);
+ b-=S.leave.filter(l=>l.t=='vac'&&l.d>=st&&l.d<=upto&&(!S.leaveFri||(new Date(D(l.d)).getUTCDay()!==5&&!S.hol.includes(l.d)))).length;
+ return raw?b:Math.max(0,b)}
+function loadMonthFields(){const x=md();moneyFields.forEach(k=>$(k).value=x[k]??0);$('leaveOpening').value=S.leaveOpening;$('leaveFrom').value=S.leaveFrom||'';refreshLeaveEntitlement()}
+function refreshLeaveEntitlement(){const b=leaveBalance(),r=leaveBalance(true);$('leaveBal').textContent=b==null?'–':b.toFixed(1);$('balbox').classList.toggle('neg',r!=null&&r<0);$('leaveBalNote').textContent=b==null?'Enter the opening balance and its date in Leave entitlement.':(r<0?'days. Vacation taken is more than the entitlement.':'days left after all recorded leave')}
+for(const k of moneyFields)$(k).addEventListener('input',()=>{md()[k]=v(k);save();run()});
+$('leaveOpening').addEventListener('input',()=>{S.leaveOpening=Math.max(0,v('leaveOpening'));if(!S.leaveFrom){S.leaveFrom=today();$('leaveFrom').value=S.leaveFrom}save();refreshLeaveEntitlement();chips()});
+$('leaveFrom').addEventListener('input',()=>{S.leaveFrom=$('leaveFrom').value;save();refreshLeaveEntitlement();chips()});
+$('leaveReset').onclick=()=>ask('Reset leave entitlement?','This clears the opening balance and all additional annual leave credits. Your recorded vacation, sick and compassionate leave dates will remain unchanged.','Reset entitlement',()=>{S.leaveOpening=0;S.leaveFrom='';S.leaveCredits=[];loadMonthFields();save();run()});
+$('leaveAddOpen').onclick=()=>{const y=+S.mon.slice(0,4)+1;$('newLeaveDays').value='';$('leaveCreditInfo').textContent='Any leave added here will be credited on 1 January each year, starting 1 January '+y+'.';$('leaveDlg').showModal()};
+$('leaveCancel').onclick=()=>$('leaveDlg').close();
+$('leaveConfirm').onclick=()=>{const days=parseFloat($('newLeaveDays').value);if(!Number.isFinite(days)||days<=0){$('newLeaveDays').focus();return}const year=+S.mon.slice(0,4)+1;ask('Confirm annual leave credit','Add '+days+' leave days to your entitlement? This credit will be applied on 1 January '+year+' and every 1 January after that.','Confirm and add',()=>{S.leaveCredits.push({days,startYear:year});$('leaveDlg').close();save();run()})};
+
+$('grp').innerHTML=['A','B','C','D'].map(g=>`<button type="button" aria-pressed="${g==S.G}" data-g="${g}">${g}</button>`).join('');
+const SHL={7:'7am-3pm-11pm',6:'6am-2pm-10pm'};
+const segSh=(id,get,set)=>{$(id).innerHTML=[7,6].map(h=>`<button type="button" aria-pressed="${h==get()}" data-h="${h}">${SHL[h]}</button>`).join('');$(id).onclick=e=>{const h=+e.target.dataset.h;if(!h)return;set(h);[...$(id).children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.h==h))}};
+segSh('shs',()=>S.sh,h=>{S.sh=h;save();run()});
+let sSh=7,sG='A';
+function openSetup(){sSh=S.sh==6?6:7;sG=S.G||'A';segSh('sSh',()=>sSh,h=>{sSh=h});
+ $('sG').innerHTML=['A','B','C','D'].map(g=>`<button type="button" aria-pressed="${g==sG}" data-g="${g}">${g}</button>`).join('');
+ $('sG').onclick=e=>{const g=e.target.dataset.g;if(!g)return;sG=g;[...$('sG').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.g==g))};
+ $('sBase').value='';$('sdlg').showModal()}
+$('sdlg').addEventListener('cancel',e=>e.preventDefault());
+$('sOk').onclick=()=>{const x=parseFloat($('sBase').value);if(!(x>0)){$('sBase').focus();return}S.sh=sSh;S.G=sG;S.fy[fyOf(S.mon)]=x;$('sdlg').close();fill();save();run()};
+$('grp').onclick=e=>{const g=e.target.dataset.g;if(!g)return;S.G=g;[...$('grp').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.g==g));save();run()};
+let im='p';const FYN=f=>'April '+f+' – March '+(f+1),FYS=f=>'Apr '+f+' – Mar '+(f+1);
+let iy=0;const bp=()=>{const f=fyOf(S.mon)+iy,ks=Object.keys(S.fy).map(Number).filter(k=>k<f),b=ks.length?S.fy[Math.max(...ks)]:(S.fyb&&S.fyb[f])||basicFor(f+'-04'),x=v('iv'),a=im=='p'?Math.round(b*x*10)/1000:x;return{f,a:Math.round(a*1000)/1000,b}};
+const iyL=()=>{const f=fyOf(S.mon);[...$('iyr').children].forEach((b,j)=>{b.textContent=FYS(f+j);b.setAttribute('aria-pressed',j==iy)});$('iwhen').textContent='Applies to '+FYN(fyOf(S.mon)+iy)+' (calculated on the basic of '+FYN(fyOf(S.mon)+iy-1)+': '+f3(bp().b)+' KWD) and stays the same for the whole year.'+(S.fy[fyOf(S.mon)+iy]?' This replaces the '+f3(S.fy[fyOf(S.mon)+iy])+' already saved for that year.':'')};
+const pv=()=>{iyL();const r=bp();$('iprev').textContent=r.a?'New basic: '+f3(r.b+r.a)+' KWD (+'+f3(r.a)+')':''};
+$('iyr').onclick=e=>{const y=e.target.dataset.y;if(y==null)return;iy=+y;pv()};
+$('iopen').onclick=()=>{$('iv').value='';iy=S.mon.slice(5,7)=='04'?0:1;pv();$('idlg').showModal()};
+$('imode').onclick=e=>{const m=e.target.dataset.m;if(!m)return;im=m;[...$('imode').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));$('ivl').textContent=m=='p'?'Increment (%)':'Increment amount (KWD)';pv()};
+$('iv').oninput=pv;
+$('isave').onclick=()=>{const r=bp();if(!r.a)return;if(!Object.keys(S.fy).some(k=>+k<r.f)){S.fyb=S.fyb||{};S.fyb[r.f]=r.b}S.fy[r.f]=Math.round((r.b+r.a)*1000)/1000;$('idlg').close();save();run()};
+$('icancel').onclick=()=>$('idlg').close();
+$('bedit').onclick=()=>{$('bt').textContent='Basic salary, '+FYN(fyOf(S.mon));$('base').value=basicFor(S.mon)||'';$('bdlg').showModal()};
+$('bsave').onclick=()=>{const x=v('base');if(x>0)S.fy[fyOf(S.mon)]=x;$('bdlg').close();save();run()};
+$('bclear').onclick=()=>{if(Object.keys(S.fy).length>1)delete S.fy[fyOf(S.mon)];$('bdlg').close();save();run()};
+$('bcancel').onclick=()=>$('bdlg').close();
+function fill(){for(const k in bind)$(k).value=S[k];[...$('shs').children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.h==S.sh));[...$('grp').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.g==S.G))}
+let act=null;const ask=(t,b,y,f)=>{$('ct').textContent=t;$('cb').textContent=b;$('cyes').textContent=y;act=f;$('cdlg').showModal()};
+$('cno').onclick=()=>$('cdlg').close();$('cyes').onclick=()=>{$('cdlg').close();act&&act()};
+const inP=k=>{const[y,m]=S.mon.split('-').map(Number),t=D(k);return t>=Date.UTC(y,m-2,19)&&t<=Date.UTC(y,m-1,18)},pl=(n,w)=>n+' '+w+(n==1?'':'s');
+$('cmon').onclick=()=>{const nh=S.hol.filter(inP).length,no=Object.keys(S.ot).filter(inP).length,nl=S.leave.filter(l=>inP(l.d)).length,m=+S.mon.slice(5,7);
+ ask('Clear this month?','This removes '+pl(nh,'holiday')+', '+pl(no,'overtime day')+', '+pl(nl,'leave day')+' and the other earnings, deductions and expenditure entries for the period 19-'+MN[(m+10)%12]+' to 18-'+MN[m-1]+' '+S.mon.slice(0,4)+'. Your basic salary and settings stay.','Clear this month',()=>{S.hol=S.hol.filter(k=>!inP(k));S.rest=S.rest.filter(k=>!inP(k));for(const k in S.ot)if(inP(k))delete S.ot[k];S.leave=S.leave.filter(l=>!inP(l.d));S.ext=S.ded=0;S.monthData[S.mon]={ticket:0,bonus:0,schoolclaim:0,companyloan:0,bankloan:0,rent:0};delete S.pm[S.mon];fill();loadMonthFields();syncExp();save();run()})};
+$('rall').onclick=()=>ask('Reset everything?','This deletes everything saved on this device: basic salary, leave, holidays, overtime, Ramadan dates, settings, credit cards, accounts, expenses and saved monthly data. You will be asked to enter your basic salary again.','Reset everything',()=>{const mon=S.mon,G=S.G,sh=S.sh;['_snap','_day','_corrupt'].forEach(x=>{try{localStorage.removeItem(SK+x)}catch(e){}});for(const k in S)delete S[k];Object.assign(S,{fy:{},hol:[],rest:[],ot:{},leave:[],G,sh,mon,rs:'',re:'',ext:0,ded:0,div:208,otb:0,skip:true,v:3,monthData:{},leaveOpening:0,leaveFrom:'',leaveFri:true,leaveCredits:[],pm:{},acc:[],act:[],yr:[],cards:[],data:{},col:{...DEF}});fill();loadMonthFields();syncExp();save();run();openSetup()});
+const LT={vac:'Vacation',sick:'Sick',comp:'Compassionate'},LH={vac:'Reduces the nature of work allowance and uses your leave balance. Fridays are skipped automatically. Mark public holidays on the duty calendar first, because marked holidays are skipped too.',sick:'Reduces the nature of work allowance only.',comp:'Reduces the nature of work allowance and the shift allowance.'};
+const payMon=k=>{let y=+k.slice(0,4),m=+k.slice(5,7);if(+k.slice(8)>=19){m++;if(m>12){m=1;y++}}return y+'-'+String(m).padStart(2,'0')},monLab=m=>MN[+m.slice(5)-1]+' '+m.slice(0,4);
+const spanTxt=(a,b)=>a==b?dm(a)+' '+a.slice(0,4):a.slice(0,4)==b.slice(0,4)?dm(a)+' to '+dm(b)+' '+b.slice(0,4):dm(a)+' '+a.slice(0,4)+' to '+dm(b)+' '+b.slice(0,4);
+const DPAIR={le:'ld',re2:'rs2',lve:'lvs'};
+['ld','le','leaveFrom','lvs','lve','rs2','re2'].forEach(id=>{const el=$(id);if(!el)return;let anc='',touched=false;
+ el.addEventListener('pointerdown',()=>{if(el.value)return;const fr=DPAIR[id]&&$(DPAIR[id])?$(DPAIR[id]).value:'';let d=fr||S.mon+'-18';if(el.min&&d<el.min)d=el.min;anc=d;touched=false;el.value=d});
+ el.addEventListener('input',()=>{touched=true});el.addEventListener('change',()=>{touched=true});
+ el.addEventListener('blur',()=>{if(anc&&!touched&&el.value===anc)el.value='';anc=''})});
+function linkDates(a,b){let manual=false;$(b).addEventListener('input',()=>{manual=true});$(a).addEventListener('input',()=>{const x=$(a).value,e=$(b).value;$(b).min=x||'';if(x&&(!manual||!e||e<x)){$(b).value=x;manual=false}});return{reset(m){manual=!!m;$(b).min=$(a).value||''}}}
+function lvRecs(){const g=[];S.leave.slice().sort((x,y)=>x.d<y.d?-1:1).forEach(l=>{const p=g[g.length-1];if(p&&p.t==l.t&&D(l.d)-D(p.e)==DAY){p.e=l.d;p.days.push(l.d)}else g.push({s:l.d,e:l.d,t:l.t,days:[l.d]})});return g}
+let LVR=[];
+function addLeave(a,b,t,old,done){const days=[];for(let x=D(a);x<=D(b);x+=DAY)days.push(iso(x));if(days.length>366)return 'That is more than a year. Please check the dates.';
+ const oldSet=new Set(old?old.days:[]),set=new Set(days),clash=S.leave.filter(l=>set.has(l.d)&&!oldSet.has(l.d));
+ const apply=()=>{S.leave=S.leave.filter(l=>!set.has(l.d)&&!oldSet.has(l.d)).concat(days.map(d=>({d,t})));save();run();done&&done()};
+ if(clash.length){const by={};clash.forEach(l=>by[l.t]=(by[l.t]||0)+1);ask('Some dates already have leave',Object.entries(by).map(([k,n])=>pl(n,'day')+' of '+LT[k]).join(' and ')+' already recorded in this range. Replace them with '+LT[t]+'?','Replace',apply)}else apply();return''}
+function chips(){
+ const rs=lvRecs();LVR=rs;const yr=$('lvYear').value||'',ys=[...new Set(rs.map(x=>x.s.slice(0,4)))].sort().reverse();
+ $('lvYear').innerHTML='<option value="">All years</option>'+ys.map(y=>`<option value="${y}"${y==yr?' selected':''}>${y}</option>`).join('');
+ const Y=yr||S.mon.slice(0,4),cnt=t=>S.leave.filter(l=>l.t==t&&l.d.slice(0,4)==Y).length;
+ $('lvV').textContent=cnt('vac');$('lvS').textContent=cnt('sick');$('lvC').textContent=cnt('comp');$('lvVl').textContent='Vacation days in '+Y;
+ const per={};S.leave.filter(l=>inP(l.d)).forEach(l=>per[l.t]=(per[l.t]||0)+1);const ps=Object.keys(per).map(t=>LT[t]+' '+per[t]);$('lvSum').textContent=ps.length?ps.join(', '):'none';
+ // checks
+ const lvSet=new Set(S.leave.map(l=>l.d)),hit=new Set([...S.hol,...S.rest,...Object.keys(S.ot).filter(k=>{const o=S.ot[k];return o&&(o.d||o.a||o.n)})].filter(k=>lvSet.has(k)));
+ const W=[];if(hit.size)W.push('Holiday, rest day or overtime is entered on '+pl(hit.size,'leave day')+'. These are ignored in the pay calculation while the person is on leave.');
+ const raw=leaveBalance(true);if(raw!=null&&raw<0)W.push('Vacation taken is '+(-raw).toFixed(1)+' days more than the entitlement. Please check the opening balance, the opening balance date and the leave dates.');
+ $('lvWarn').innerHTML=W.map(x=>`<p class="neg sm">${x}</p>`).join('');
+ const today=Date.UTC(...new Date().toISOString().slice(0,10).split('-').map((x,i)=>i==1?x-1:+x));
+ const shown=rs.map((x,n)=>({x,n})).filter(o=>!yr||o.x.s.slice(0,4)==yr||o.x.e.slice(0,4)==yr).reverse();
+ $('lvList').innerHTML=shown.map(({x,n})=>{const nd=x.days.length,pm={};x.days.forEach(d=>{const m=payMon(d);pm[m]=(pm[m]||0)+1});
+  const counted=x.t=='vac'?x.days.filter(d=>(!S.leaveFri||(new Date(D(d)).getUTCDay()!==5&&!S.hol.includes(d)))&&(!S.leaveFrom||d>=S.leaveFrom)).length:0;
+  const F=[];if(x.t=='vac'&&S.leaveFrom){const bf=x.days.filter(d=>d<S.leaveFrom).length;if(bf==nd)F.push('This is before the opening balance date, so it is not deducted again.');else if(bf)F.push(pl(bf,'day')+' of this are before the opening balance date and are not deducted again.')}
+  if(x.days.some(d=>hit.has(d)))F.push('Holiday or overtime is entered on these dates.');
+  if(Math.abs(D(x.s)-today)>400*DAY||Math.abs(D(x.e)-today)>400*DAY)F.push('These dates are far from today. Please check the year.');
+  return`<div class="lv"><div class="lvh"><span class="tag">${LT[x.t]}</span><b>${spanTxt(x.s,x.e)}</b><span class="sm">${pl(nd,'day')}</span></div>
+<p class="sm">Paid in: ${Object.keys(pm).map(m=>monLab(m)+(Object.keys(pm).length>1?' ('+pm[m]+')':'')).join(', ')}${x.t=='vac'&&S.leaveFrom?' · Taken from balance: '+counted+(counted<nd?' (Fridays and holidays are not counted)':''):''}${(()=>{const bl=x.t=='vac'?leaveBalance(true,x.e):null;return bl==null?'':' · Leaves left after '+dm(x.e)+' '+x.e.slice(0,4)+': '+bl.toFixed(1)})()}</p>${F.map(f=>`<p class="neg sm">${f}</p>`).join('')}
+<div class="acts"><button class="btn alt" type="button" data-ed="${n}">Replace</button><button class="btn alt" type="button" data-dl="${n}">Delete</button></div></div>`}).join('')||'<p class="sm">No leave recorded.</p>'}
+$('lvYear').onchange=()=>chips();
+$('lt').onchange=()=>{$('lvHint').textContent=LH[$('lt').value]};$('lvHint').textContent=LH.vac;
+const lvLink=linkDates('ld','le'),lvLink2=linkDates('lvs','lve');
+$('ladd').onclick=()=>{const a=$('ld').value,b=$('le').value||a,m=$('lvMsg');m.textContent='';m.className='sm';if(!a){m.textContent='Choose the From date.';m.className='neg sm';$('ld').focus();return}if(b<a){m.textContent='The To date is before the From date.';m.className='neg sm';return}
+ const dl=[];for(let x=D(a);x<=D(b);x+=DAY)dl.push(iso(x));const nDays=dl.length;const err=addLeave(a,b,$('lt').value,null,()=>{$('lvYear').value='';$('ld').value=$('le').value='';$('le').min='';lvLink.reset(false);const t=$('lt').value;let msg='Added '+pl(nDays,'day')+'.';if(t=='vac'){const ded=dl.filter(d=>new Date(D(d)).getUTCDay()!==5&&!S.hol.includes(d)).length;msg+=' '+ded+' will be deducted from the leave balance (Fridays and marked holidays are skipped). If a public holiday falls inside these dates, mark it on the duty calendar.'}m.textContent=msg});if(err){m.textContent=err;m.className='neg sm'}};
+let lvCur=null;
+$('lvList').onclick=e=>{const ed=e.target.dataset.ed,dl=e.target.dataset.dl;
+ if(ed!=null){lvCur=LVR[ed];$('lvOld').textContent='Current: '+LT[lvCur.t]+', '+spanTxt(lvCur.s,lvCur.e)+'.';$('lvs').value=lvCur.s;$('lve').value=lvCur.e;$('lvt').value=lvCur.t;$('lvEMsg').textContent='';lvLink2.reset(lvCur.e!=lvCur.s);$('lvDlg').showModal()}
+ if(dl!=null){const x=LVR[dl];ask('Delete this leave?',LT[x.t]+', '+spanTxt(x.s,x.e)+' ('+pl(x.days.length,'day')+'). The pay and leave balance will be recalculated.','Delete',()=>{const gone=new Set(x.days);S.leave=S.leave.filter(l=>!gone.has(l.d));save();run()})}};
+$('lvCancel').onclick=()=>$('lvDlg').close();
+$('lvSave').onclick=()=>{const a=$('lvs').value,b=$('lve').value||a,m=$('lvEMsg');m.textContent='';if(!a){m.textContent='Choose the From date.';return}if(b<a){m.textContent='The To date is before the From date.';return}
+ const err=addLeave(a,b,$('lvt').value,lvCur,()=>$('lvDlg').close());if(err)m.textContent=err};
+$('lvGo').onclick=()=>showTab('l');
+let cur='';
+function openDay(k){cur=k;const o=S.ot[cur]||{};$('dt').textContent=dm(cur)+'-'+cur.slice(0,4);$('dh').checked=S.hol.includes(cur);$('dr').checked=S.rest.includes(cur);$('dd').value=o.d||'';$('da').value=o.a||'';$('dn').value=o.n||'';
+ const own=payMon(cur),op=[['','In the pay month of this date ('+monLab(own)+')'],['wait','Waiting for approval (not counted yet)']];let m=own;for(let i=0;i<3;i++){m=nk(m);op.push([m,'Paid in '+monLab(m)])}
+ if(o.pay&&o.pay!='wait'&&!op.some(x=>x[0]==o.pay))op.push([o.pay,'Paid in '+monLab(o.pay)]);
+ $('dp').innerHTML=op.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('dp').value=o.pay&&o.pay!=own?o.pay:'';$('dlg').showModal()}
+$('cal').onclick=e=>{const b=e.target.closest('.d');if(!b)return;openDay(b.dataset.k)};
+function otNotes(){const hrs=o=>[o.d?o.d+' morning':'',o.a?o.a+' afternoon':'',o.n?o.n+' night':''].filter(Boolean).join(', ')+' hrs',has=o=>o&&(o.d||o.a||o.n),ks=Object.keys(S.ot).filter(k=>has(S.ot[k])).sort(),rows=[],row=(k,txt,btn)=>`<div class="lv"><div class="lvh"><b>${dm(k)} ${k.slice(0,4)}</b><span class="sm">${hrs(S.ot[k])}</span></div><p class="sm">${txt}</p><div class="acts">${btn}<button class="btn alt" type="button" data-edot="${k}">Edit</button></div></div>`;
+ const wait=ks.filter(k=>S.ot[k].pay=='wait'),inn=ks.filter(k=>S.ot[k].pay!='wait'&&(S.ot[k].pay||pmOf(k))==S.mon&&pmOf(k)!=S.mon),out=ks.filter(k=>S.ot[k].pay&&S.ot[k].pay!='wait'&&pmOf(k)==S.mon&&S.ot[k].pay!=S.mon);
+ let h='';if(inn.length)h+='<p class="sm" style="margin:12px 0 0"><b>Paid in this month, worked earlier</b></p>'+inn.map(k=>row(k,'Worked in the '+monLab(pmOf(k))+' pay period and paid in this month.','')).join('');
+ if(out.length)h+='<p class="sm" style="margin:12px 0 0"><b>Worked this month, paid later</b></p>'+out.map(k=>row(k,'Not counted in this month. It is counted in '+monLab(S.ot[k].pay)+'.','')).join('');
+ if(wait.length)h+='<p class="sm" style="margin:12px 0 0"><b>Waiting for approval</b></p>'+wait.map(k=>row(k,'Not counted in any month yet.',`<button class="btn" type="button" data-addm="${k}">Add to ${monLab(S.mon)} pay</button>`)).join('');
+ $('otList').innerHTML=h}
+$('otList').onclick=e=>{const a=e.target.dataset.addm,ed=e.target.dataset.edot;if(a){if(S.mon==pmOf(a))delete S.ot[a].pay;else S.ot[a].pay=S.mon;save();run()}if(ed)openDay(ed)};
+const ramLink=linkDates('rs2','re2');
+$('ramBtn').onclick=()=>{$('rs2').value=S.rs||'';$('re2').value=S.re||'';ramLink.reset(!!(S.re&&S.re!=S.rs));$('rdlg').showModal()};
+$('rcancel').onclick=()=>$('rdlg').close();$('rclear').onclick=()=>{S.rs=S.re='';$('rdlg').close();save();run()};
+$('rsave').onclick=()=>{let a=$('rs2').value,b=$('re2').value;if(a&&!b)b=a;if(b&&!a)a=b;if(a&&b&&b<a)[a,b]=[b,a];S.rs=a;S.re=b;$('rdlg').close();save();run()};
+$('dcancel').onclick=()=>$('dlg').close();
+$('dsave').onclick=()=>{S.hol=S.hol.filter(x=>x!=cur);S.rest=S.rest.filter(x=>x!=cur);if($('dh').checked)S.hol.push(cur);if($('dr').checked)S.rest.push(cur);const d=v('dd'),a=v('da'),n=v('dn');if(d||a||n){S.ot[cur]={d,a,n};const pay=$('dp').value;if(pay&&pay!=payMon(cur))S.ot[cur].pay=pay}else delete S.ot[cur];$('dlg').close();save();run()};
+function args(){const[y,m]=S.mon.split('-').map(Number),st=Date.UTC(y,m-2,19),en=Date.UTC(y,m-1,18);let dO=0,nO=0,aO=0;for(const k in S.ot){const o=S.ot[k];if(o.pay!='wait'&&(o.pay||pmOf(k))==S.mon){dO+=o.d||0;nO+=o.n||0;aO+=o.a||0}}
+ return{year:y,month:m,group:S.G,sh:S.sh,basic:basicFor(S.mon),basicAt:t=>basicFor(iso(t).slice(0,7)),otDays:S.ot,otBasic:S.otb||0,leave:S.leave,holidays:new Set(S.hol),rest:new Set(S.rest),ram:[S.rs,S.re],skip:S.skip,dayOT:dO,aftOT:aO,nightOT:nO,extra:S.ext,ded:S.ded,div:S.div,...md()}}
+function run(){const[y,m]=S.mon.split('-').map(Number);if(!y)return;
+ const a=args(),dO=a.dayOT,aO=a.aftOT,nO=a.nightOT,basic=a.basic,r=calc(a);
+ chips();otNotes();$('bnowv').textContent=f3(basic);$('tdo').textContent=dO;$('tao').textContent=aO;$('tno').textContent=nO;
+ $('net').innerHTML='<span>'+f3(r.net)+'</span><small class="cur">KWD</small>';$('netl').textContent='Salary in hand for '+MN[m-1]+' '+y;
+ const x=md(),after=r.net-(x.bankloan||0)-(x.rent||0);refreshLeaveEntitlement();
+ let h='<tr><th>Item</th><th class="n">Hours</th><th class="n">KWD</th></tr>',gp='';r.L.forEach(x=>{if(x.g!=gp){gp=x.g;h+=`<tr class="grp"><td colspan="3">${gp}</td></tr>`}h+=`<tr><td>${x.n}</td><td class="n sm">${x.h?x.h:''}</td><td class="n">${f3(x.a)}</td></tr>`});
+ h+=`<tr class="grp"><td>Total earnings</td><td></td><td class="n">${f3(r.gross)}</td></tr>`;if(r.otherDed)h+=`<tr><td>Other deductions</td><td></td><td class="n neg">−${f3(r.otherDed)}</td></tr>`;if(r.companyLoan)h+=`<tr><td>Company loan EMI</td><td></td><td class="n neg">−${f3(r.companyLoan)}</td></tr>`;h+=`<tr class="tot"><td>Salary in hand</td><td></td><td class="n">${f3(r.net)}</td></tr>`;
+ h+=`<tr><td>Bank loan EMI</td><td></td><td class="n neg">−${f3(x.bankloan||0)}</td></tr><tr><td>Rent</td><td></td><td class="n neg">−${f3(x.rent||0)}</td></tr><tr class="tot"><td>Amount left after loan and rent</td><td></td><td class="n">${f3(after)}</td></tr>`;$('tb').innerHTML=h;
+ {const n=$('ramNote'),a=r.cal.length?r.cal[0].k:'',b=r.cal.length?r.cal[r.cal.length-1].k:'';if(S.rs&&S.re&&a&&S.rs<=b&&S.re>=a){const f=k=>dm(k)+' '+k.slice(0,4);n.style.display='';n.textContent='Ramadan: '+f(S.rs)+' to '+f(S.re)+(S.rs<a?' (started in an earlier pay month)':'')+(S.re>b?' (continues into the next pay month)':'')+'. Days marked with a gold outline are already counted here. Enter the Ramadan dates once only and do not add them again for the other month.'}else n.style.display='none'}
+ $('cal').innerHTML=Array.from({length:r.cal.length?new Date(D(r.cal[0].k)).getUTCDay():0},()=>'<span aria-hidden="true"></span>').join('')+r.cal.map(c=>{const o=S.ot[c.k]||{},t=[c.H?'HOLIDAY':'',c.R?'REST':'',o.d?'M '+o.d:'',o.a?'A '+o.a:'',o.n?'N '+o.n:'',(o.d||o.a||o.n)&&o.pay?(o.pay=='wait'?'waiting':'→'+MN[+o.pay.slice(5)-1]):''].filter(Boolean).join(' · ');return`<button type="button" class="d ${c.s}${c.H?' H':''}${S.rs&&c.k>=S.rs&&c.k<=S.re?' rm':''}${c.L?' L':''}" style="${sp(c,o)}" data-k="${c.k}" aria-label="${wd(c.k)} ${dm(c.k)}${c.H?', Public holiday':''}${c.R?', Rest day':''}${c.L?', Leave':''}"><span class="daylabel">${dm(c.k)}</span><b>${c.s=='O'?'–':c.s}</b><em class="${t?'tg':''}">${t}</em></button>`}).join('')}
+function sp(c,o){return tc(c.s)}
+function tc(s){const c=S.col[s];if(!c)return'';const n=parseInt(c.slice(1),16);return'color:'+((0.299*(n>>16)+0.587*(n>>8&255)+0.114*(n&255))/255>.6?'#111':'#fff')}
+function applyCols(){['M','A','N','O','H'].forEach(s=>S.col[s]?document.documentElement.style.setProperty('--'+s,S.col[s]):document.documentElement.style.removeProperty('--'+s))}
+loadMonthFields();
+applyCols();chips();run();
+
+// EXPENDITURE PAGE: month by month, built on the salary result.
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const REC=['school','elec','pocket'],FM={exSchool:'school',exElectricity:'elec',exGift:'gift',exPocket:'pocket'};
+if(S.acc.length&&!S.salAcc)S.salAcc=S.acc[S.acc.length-1].id;
+const ensureSal=()=>{if(!S.acc.some(a=>a.id==S.salAcc))S.salAcc=S.acc.length?S.acc[0].id:'';return S.salAcc};
+const rec=()=>S.pm[S.mon]=S.pm[S.mon]||{open:{},add:{},cc:{}},sumA=l=>l.reduce((s,x)=>s+(parseFloat(x.amount??x.a)||0),0),valOf=id=>$(id).value===''?null:Math.max(0,parseFloat($(id).value)||0);
+const back=g=>{let k=pk(S.mon);for(let i=0;i<36;i++,k=pk(k)){const x=g(S.pm[k]);if(x!=null)return x}return null};
+const eff=f=>S.pm[S.mon]?.[f]??(REC.includes(f)?(back(r=>r?.[f])??0):0),effAdd=id=>S.pm[S.mon]?.add?.[id]??((S.acc.find(a=>a.id==id)||{}).rep===false?0:(x=>x>0?x:0)(back(r=>r?.add?.[id])))??0,effCc=id=>S.pm[S.mon]?.cc?.[id]??back(r=>r?.cc?.[id]);
+const setF=(f,x)=>{const r=rec();if(x==null)delete r[f];else r[f]=x};
+const setIn=(o,id,x)=>{const r=rec();r[o]=r[o]||{};if(x==null)delete r[o][id];else r[o][id]=x};
+let LAST=null,hiMonth='';
+function renderCards(){$('cardList').innerHTML=S.cards.map(c=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(c.name)}</div><div class="row"><div><label for="cl_${c.id}">Total limit (KWD)</label><input id="cl_${c.id}" type="number" min="0" step="0.001" data-limit="${c.id}" value="${esc(c.limit??'')}" placeholder="0.000"></div><div><label for="cr_${c.id}">Limit left (KWD)</label><input id="cr_${c.id}" type="number" min="0" step="0.001" data-rem="${c.id}" value="${esc(S.pm[S.mon]?.cc?.[c.id]??'')}" placeholder="${effCc(c.id)==null?'0.000':f3(effCc(c.id))}"></div></div></div><div class="entry-tools"><button type="button" class="delete-entry" data-cdel="${c.id}" title="Delete card" aria-label="Delete ${esc(c.name)}">×</button></div></div>`).join('')}
+function renderAccounts(){const prev=S.pm[pk(S.mon)]?.res||{},r0=S.pm[S.mon]||{},sal=ensureSal(),multi=S.acc.length>1;
+ $('accountList').innerHTML=S.acc.map(c=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(c.name)}</div>${multi?`<label class="salopt"><input type="radio" name="salacc" data-sal="${c.id}"${c.id==sal?' checked':''}> Salary account (keeps the money that is left)</label>`:''}<label for="op_${c.id}">Opening balance this month (KWD)</label><input id="op_${c.id}" type="number" min="0" step="0.001" data-open="${c.id}" value="${esc(r0.open?.[c.id]??'')}" placeholder="${f3(prev[c.id]||0)}"><p class="hint" style="margin:4px 0 0">Leave empty to use the plan. Type the real bank balance to see the difference on the Data page.</p></div><div class="entry-tools"><button type="button" class="delete-entry" data-adel="${c.id}" title="Delete account" aria-label="Delete ${esc(c.name)}">×</button></div></div>`).join('');
+ $('allocList').innerHTML=S.acc.map(c=>{const last=c.id==sal;return`<div class="allocation-row"><div class="allocation-name"><b>${esc(c.name)}</b><span>Opening: <i id="ao_${c.id}"></i> KWD</span></div><div class="allocation-input"><div class="proj-label">Projected balance</div><div class="proj" id="ac_${c.id}"></div>${last?`<div class="allocation-value" id="aa_${c.id}"></div>`:`${(r0.add?.[c.id]??0)<0?`<p class="allocation-value" style="margin:8px 0 4px">Transferred to the salary account: <b>${f3(-r0.add[c.id])} KWD</b></p><div class="bk"><button class="btn alt" type="button" data-tchg="${c.id}">Change</button><button class="btn alt" type="button" data-trm="${c.id}">Remove</button></div>`:`<label>Amount moved from the salary account (KWD)</label><input type="number" min="0" step="0.001" data-add="${c.id}" value="${esc(r0.add?.[c.id]??'')}" placeholder="${f3(effAdd(c.id))}"><label class="salopt"><input type="checkbox" data-rep="${c.id}"${c.rep===false?'':' checked'}> Repeat this amount every month</label><button class="linkbtn" type="button" data-tchg="${c.id}">Transfer to the salary account instead</button>`}`}</div></div>`}).join('')}
+function renderActs(){$('activityList').innerHTML=S.act.map((a,i)=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(a.name)}</div><label for="am${i}">Monthly amount (KWD)</label><input id="am${i}" type="number" min="0" step="0.001" data-act="${i}" value="${esc(a.amount??'')}" placeholder="0.000"></div><div class="entry-tools"><button type="button" class="delete-entry" data-adl="${i}" title="Delete activity" aria-label="Delete ${esc(a.name)}">×</button></div></div>`).join('')}
+function renderYr(){$('yrl').innerHTML=S.yr.map((y,i)=>`<span class="chip">${esc(y.n)}: ${f3(y.a)}, ${MN[+y.m.slice(5)-1]} ${y.m.slice(0,4)} <button type="button" aria-label="Remove" data-yd="${i}">×</button></span>`).join('')}
+function renderTotals(){
+ const m1=md(),pr0=calc(args()),loans=(m1.bankloan||0)+(m1.rent||0),inHand=pr0.net,left=inHand-loans,mon=['school','elec','gift','pocket'].reduce((s,f)=>s+eff(f),0),acts=sumA(S.act),
+ bill=S.cards.reduce((s,c)=>{const r=effCc(c.id);return s+(r==null?0:Math.max(0,(parseFloat(c.limit)||0)-r))},0),yo=sumA(S.yr.filter(y=>y.m==S.mon)),exp=mon+acts+bill+yo,avail=left-exp,r0=S.pm[S.mon]||{},prev=S.pm[pk(S.mon)]?.res||{};
+ let typed=0,proj=0,open=0;const sal=ensureSal();const rows=S.acc.map(c=>{const last=c.id==sal,o=r0.open?.[c.id]??prev[c.id]??0,add=last?0:effAdd(c.id);if(!last)typed+=add;const d=(r0.open?.[c.id]!=null&&prev[c.id]!=null)?r0.open[c.id]-prev[c.id]:null;return{c,last,o,add,d}});
+ rows.forEach(r=>{if(r.last)r.add=(Math.round((avail-typed)*1000)/1000)||0;r.cl=r.o+r.add;proj+=r.cl;open+=r.o});
+ if(rows.length){const rr=rec();rr.res={};rows.forEach(r=>rr.res[r.c.id]=r.cl);save()}
+ let k=S.mon,aside=0;for(let i=0;i<12;i++){aside+=sumA(S.yr.filter(y=>y.m==k));k=nk(k)}
+ LAST={inHand,bill,exp,total:proj,acc:rows.map(r=>({n:r.c.name,p:r.cl,d:r.d}))};
+ $('expMonth').textContent='Planning for '+MN[+S.mon.slice(5)-1]+' '+S.mon.slice(0,4)+'. Change the month on the Salary page.';
+ $('ccPaid').textContent=f3(bill)+' KWD';$('monthlyTotal').textContent=f3(mon)+' KWD';$('activityTotal').textContent=f3(acts)+' KWD';
+ $('setAside').textContent=f3(aside/12)+' KWD';$('accountBalanceTotal').textContent=f3(open)+' KWD';
+ rows.forEach(r=>{const id=r.c.id;$('ao_'+id).textContent=f3(r.o);$('ac_'+id).textContent=f3(r.cl)+' KWD';if(r.last)$('aa_'+id).textContent='Remainder added: '+f3(r.add)+' KWD'});
+ const R=(t,v,c)=>`<tr class="${c||''}"><td>${t}</td><td class="n">${v<0?'−':''}${f3(Math.abs(v))}</td></tr>`;
+ const SR=[['Total salary',pr0.gross,''],...(pr0.otherDed?[['Other deductions',-pr0.otherDed,'']]:[]),['Company loan EMI',-pr0.companyLoan,''],['Salary in hand',inHand,'tot'],['Bank loan EMI',-(m1.bankloan||0),''],['Rent',-(m1.rent||0),''],['Amount left after loan and rent',left,'tot'],['Monthly expenses',-mon,''],['Extra-curricular activities',-acts,''],['Credit cards to be paid',-bill,''],['Yearly payments this month',-yo,''],['Total estimated expenditure',-exp,'tot'],['Available for allocation',avail,'tot']];
+ $('sumBox').innerHTML='<table>'+SR.map(x=>R(x[0],x[1],x[2])).join('')+'</table>';LAST.sum=SR.map(x=>[x[0],Math.round(x[1]*1000)/1000,x[2]]);
+ const sr=rows.find(r=>r.last)||rows[0],salAdd=sr?sr.add:avail;
+ let msg='';const all=rows.filter(r=>!r.last).map(r=>({id:r.c.id,name:r.c.name,max:r.o}));
+ SHORT={need:salAdd<-0.0005?-salAdd:0,sal:sr?sr.c.name:'',all};
+ if(SHORT.need)msg='The salary account is short by '+f3(SHORT.need)+' KWD.';else if(avail<0)msg='The plan was short by '+f3(-avail)+' KWD. It is covered by money transferred to the salary account.';
+ const neg=rows.filter(r=>r.cl<0).map(r=>r.c.name);if(neg.length)msg+=(msg?' ':'')+(neg.join(', ')+' would go below zero.');
+ $('short').textContent=msg;$('short').className=(SHORT.need||neg.length)?'neg':'sm';$('shortAct').innerHTML=(SHORT.need&&all.some(x=>x.max>0.0005))?'<button class="btn" type="button" id="tpop">Transfer money to the salary account</button>':''}
+function syncExp(){const r=S.pm[S.mon]||{};for(const id in FM){const f=FM[id];$(id).value=r[f]??'';$(id).placeholder=REC.includes(f)?f3(eff(f)):'0.000'}
+ $('yrmn').value=S.mon;renderCards();renderAccounts();renderActs();renderYr();renderTotals()}
+const sg=x=>(x<0?'−':x>0?'+':'')+f3(Math.abs(x));
+function diffCell(d){const a=d.acc.filter(x=>x.d!=null&&x.d!==undefined);if(!a.length)return'–';const t=a.reduce((n,x)=>n+x.d,0);return`<b class="${t<0?'neg':''}">${sg(t)}</b>`+(a.length>1?a.map(x=>`<div class="sm">${esc(x.n)} ${sg(x.d)}</div>`).join(''):'')}
+const DET=new Set();
+function renderData(){const ks=Object.keys(S.data).sort().reverse(),n=Math.max(0,...ks.map(k=>S.data[k].acc.length)),
+ names=[...Array(n)].map((_,i)=>{for(const k of ks){const a=S.data[k].acc[i];if(a)return a.n}return 'Account '+(i+1)});
+ let h='<tr><th>Month</th><th class="n">Salary in hand</th><th class="n">Credit card to be paid</th><th class="n">Estimated expenditure</th>'+names.map(x=>`<th class="n">${esc(x)} projected balance</th>`).join('')+'<th class="n">Actual vs plan</th><th></th></tr>';
+ h+=ks.map(k=>{const d=S.data[k],lab=MN[+k.slice(5)-1]+' '+k.slice(0,4);return`<tr class="${k==hiMonth?'hi':''}"><td>${lab}<br><button type="button" class="linkbtn" data-dt="${k}">${DET.has(k)?'Hide summary':'Show summary'}</button></td><td class="n">${f3(d.inHand)}</td><td class="n">${f3(d.bill)}</td><td class="n">${f3(d.exp)}</td>${names.map((_,i)=>{const a=d.acc[i];return`<td class="n" title="${a?esc(a.n):''}">${a?f3(a.p):'–'}</td>`}).join('')}<td class="n">${diffCell(d)}</td><td><button type="button" class="icon-btn" data-dd="${k}" title="Delete ${lab}" aria-label="Delete ${lab}">×</button></td></tr>`+(DET.has(k)?`<tr class="det"><td colspan="${names.length+6}"><div class="sm" style="margin:2px 0 6px"><b>Estimated expenditure summary, ${lab}</b></div>${d.sum?'<table class="mini">'+d.sum.map(x=>`<tr class="${x[2]||''}"><td>${esc(x[0])}</td><td class="n">${x[1]<0?'−':''}${f3(Math.abs(x[1]))}</td></tr>`).join('')+'</table>':'<p class="sm">This month was saved before the summary was added. Open the month and press Save data again to store it.</p>'}</td></tr>`:'')}).join('');
+ if(!ks.length)h='<tr><td>No months saved yet.</td></tr>';$('dataTable').innerHTML=h}
+function showTab(t){$('calc').hidden=t!='s';$('leavepage').hidden=t!='l';$('expenditure').hidden=t!='e';$('datapage').hidden=t!='d';
+ [['s','salaryTab'],['l','leaveTab'],['e','expenditureTab'],['d','dataTab']].forEach(([k,id])=>$(id).setAttribute('aria-selected',k==t));if(t=='e'){syncExp();setTimeout(checkShort,80)}if(t=='d')renderData();else hiMonth=''}
+for(const id in FM)$(id).addEventListener('input',()=>{setF(FM[id],valOf(id));save();renderTotals()});
+$('cardList').addEventListener('input',e=>{const l=e.target.dataset.limit,r=e.target.dataset.rem;if(l){S.cards.find(c=>c.id==l).limit=e.target.value===''?'':Math.max(0,parseFloat(e.target.value)||0);save();renderTotals()}if(r){setIn('cc',r,e.target.value===''?null:Math.max(0,parseFloat(e.target.value)||0));save();renderTotals()}});
+$('cardList').addEventListener('click',e=>{const id=e.target.dataset.cdel;if(!id)return;const c=S.cards.find(x=>x.id==id);ask('Delete credit card?','This removes '+(c?c.name:'the card')+' from every month.','Delete card',()=>{S.cards=S.cards.filter(x=>x.id!=id);save();syncExp()})});
+$('accountList').addEventListener('input',e=>{const id=e.target.dataset.open;if(!id)return;setIn('open',id,valOf('op_'+id));save();renderTotals()});
+$('allocList').addEventListener('input',e=>{const id=e.target.dataset.add;if(!id)return;setIn('add',id,e.target.value===''?null:Math.max(0,parseFloat(e.target.value)||0));save();renderTotals()});
+$('accountList').addEventListener('change',e=>{const id=e.target.dataset.sal;if(!id)return;S.salAcc=id;save();renderAccounts();renderTotals()});
+let SHORT={need:0,sal:'',all:[]},askedKey='',tThen=null;
+const dlgOpen=()=>{try{return !!document.querySelector('dialog[open]')}catch(e){return false}};
+function openTransfer(pref,then){tThen=then||null;const all=SHORT.all;if(!all.length){if(then)then();return}
+ const need=SHORT.need,cur=pref?-(S.pm[S.mon]?.add?.[pref]??0):0,pick=pref||(all.find(x=>x.max>=need&&need>0)||all.find(x=>x.max>0.0005)||all[0]).id;
+ $('tmsg').textContent=(need>0?'This month\'s plan is short by '+f3(need)+' KWD in the salary account ('+SHORT.sal+'). Do you want to transfer money into it from another account?':'Move money from another account into the salary account ('+SHORT.sal+').');
+ $('tfrom').innerHTML=all.map(x=>`<option value="${x.id}">${esc(x.name)} (balance ${f3(x.max)} KWD)</option>`).join('');$('tfrom').value=pick;
+ const mx=(all.find(x=>x.id==pick)||{}).max||0;$('tamt').value=cur>0?cur:(need>0?Math.round(Math.min(need,mx>0?mx:need)*1000)/1000:'');$('terr').textContent='';$('tdlg').showModal()}
+$('tfrom').onchange=()=>{const x=SHORT.all.find(a=>a.id==$('tfrom').value);if(x&&SHORT.need>0)$('tamt').value=Math.round(Math.min(SHORT.need,x.max>0?x.max:SHORT.need)*1000)/1000};
+$('tgo').onclick=()=>{const id=$('tfrom').value,amt=parseFloat($('tamt').value),x=SHORT.all.find(a=>a.id==id);if(!(amt>0)){$('terr').textContent='Enter the amount to transfer.';return}
+ if(x&&amt>x.max+0.0005){$('terr').textContent=x.name+' has only '+f3(x.max)+' KWD.';return}
+ setIn('add',id,-Math.round(amt*1000)/1000);save();$('tdlg').close();renderAccounts();renderTotals();const t=tThen;tThen=null;if(t)t()};
+$('tCancel').onclick=()=>{$('tdlg').close();const t=tThen;tThen=null;if(t)t()};
+function checkShort(){if(dlgOpen()||!(SHORT.need>0)||!SHORT.all.some(x=>x.max>0.0005))return;const key=S.mon+':'+SHORT.need.toFixed(3);if(key==askedKey)return;askedKey=key;openTransfer(null)}
+$('expenditure').addEventListener('change',()=>setTimeout(checkShort,80));
+$('entryConfirm').addEventListener('click',()=>setTimeout(checkShort,150));
+$('shortAct').addEventListener('click',e=>{if(e.target.id=='tpop')openTransfer(null)});
+$('allocList').addEventListener('click',e=>{const c=e.target.dataset.tchg,r=e.target.dataset.trm;if(c)openTransfer(c);if(r){setIn('add',r,null);save();renderAccounts();renderTotals()}});
+$('allocList').addEventListener('change',e=>{const id=e.target.dataset.rep;if(!id)return;const c=S.acc.find(x=>x.id==id);if(c){c.rep=e.target.checked;save();renderAccounts();renderTotals()}});
+$('accountList').addEventListener('click',e=>{const id=e.target.dataset.adel;if(!id)return;const c=S.acc.find(x=>x.id==id);ask('Delete account?','This removes '+(c?c.name:'the account')+' from every month.','Delete account',()=>{S.acc=S.acc.filter(x=>x.id!=id);ensureSal();save();syncExp()})});
+$('activityList').addEventListener('input',e=>{const i=e.target.dataset.act;if(i==null)return;S.act[+i].amount=e.target.value===''?'':Math.max(0,parseFloat(e.target.value)||0);save();renderTotals()});
+$('activityList').addEventListener('click',e=>{const i=e.target.dataset.adl;if(i==null)return;const a=S.act[+i];ask('Delete activity?','This removes '+(a?a.name:'the activity')+' from every month.','Delete activity',()=>{S.act.splice(+i,1);save();renderActs();renderTotals()})});
+$('yradd').onclick=()=>{const n=$('yrn').value.trim(),a=parseFloat($('yra').value);if(!n||!(a>0))return;S.yr.push({n,a,m:$('yrmn').value||S.mon});$('yrn').value=$('yra').value='';save();renderYr();renderTotals()};
+$('yrl').addEventListener('click',e=>{const i=e.target.dataset.yd;if(i==null)return;S.yr.splice(+i,1);save();renderYr();renderTotals()});
+let entryMode='activity';const EM={activity:['Add extra-curricular activity','Monthly amount (KWD)','Add activity'],account:['Add account','Opening balance this month (KWD)','Add account'],card:['Add credit card','Total limit (KWD)','Add card']};
+function openEntryDialog(mode){entryMode=mode;$('entryDialogTitle').textContent=EM[mode][0];$('entryAmountLabel').textContent=EM[mode][1];$('entryConfirm').textContent=EM[mode][2];$('entryName').value='';$('entryAmount').value='';$('entryDlg').showModal();$('entryName').focus()}
+$('entryCancel').onclick=()=>$('entryDlg').close();
+$('entryConfirm').onclick=()=>{const name=$('entryName').value.trim(),amount=$('entryAmount').value;if(!name){$('entryName').focus();return}if(amount!==''&&(!Number.isFinite(+amount)||+amount<0)){$('entryAmount').focus();return}
+ const id=entryMode+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+ if(entryMode==='activity')S.act.push({id,name,amount:amount===''?'':+amount});else if(entryMode==='card')S.cards.push({id,name,limit:amount===''?'':+amount});else{S.acc.push({id,name});if(amount!=='')setIn('open',id,+amount)}
+ $('entryDlg').close();save();syncExp()};
+$('addActivity').onclick=()=>openEntryDialog('activity');$('addAccount').onclick=()=>openEntryDialog('account');$('addCard').onclick=()=>openEntryDialog('card');
+const doSave=()=>{if(!LAST)return;S.data[S.mon]={...LAST,at:Date.now()};hiMonth=S.mon;save();$('dataNote').textContent='Saved '+MN[+S.mon.slice(5)-1]+' '+S.mon.slice(0,4)+'. Saving the same month again replaces it.';showTab('d');hiMonth=S.mon};
+$('saveData').onclick=()=>{renderTotals();const go=()=>{const lab=MN[+S.mon.slice(5)-1]+' '+S.mon.slice(0,4);if(S.data[S.mon])ask('Replace saved month?','Data for '+lab+' is already saved. Saving again replaces it.','Replace',doSave);else doSave()};if(SHORT.need>0&&SHORT.all.some(x=>x.max>0.0005)){askedKey=S.mon+':'+SHORT.need.toFixed(3);openTransfer(null,()=>{renderTotals();go()})}else go()};
+$('dataTable').addEventListener('click',e=>{const t=e.target.dataset.dt;if(t){DET.has(t)?DET.delete(t):DET.add(t);renderData();return}const k=e.target.dataset.dd;if(!k)return;const lab=MN[+k.slice(5)-1]+' '+k.slice(0,4);ask('Delete saved month?','This removes '+lab+' from the saved data.','Delete',()=>{delete S.data[k];save();renderData()})});
+const run0=run;run=function(){run0();renderTotals()};
+$('mon').addEventListener('input',syncExp);
+$('salaryTab').onclick=()=>showTab('s');$('leaveTab').onclick=()=>showTab('l');$('expenditureTab').onclick=()=>showTab('e');$('dataTab').onclick=()=>showTab('d');
+$('dataNote').textContent='Press Save data on the Expenditure page to store a month here. Saving the same month again replaces it.';
+// BACKUP AND RESTORE
+function makeBackup(){return JSON.stringify({app:'shiftpay',version:3,exported:new Date().toISOString(),state:S},null,1)}
+const hasData=()=>Object.keys(S.fy).length>0||Object.keys(S.data).length>0||S.leave.length>0||Object.keys(S.ot).length>0;
+function updBanner(){const m=[];if(!storageOK)m.push('This browser is not saving your data on this device, so it will be lost when you close the page. Download a backup before you close.');if(loadMsg)m.push(loadMsg);
+ const age=S.lastBackup?(Date.now()-S.lastBackup)/864e5:Infinity;if(hasData()&&age>30)m.push(S.lastBackup?'Your last backup was '+Math.floor(age)+' days ago.':'You have not made a backup yet.');
+ $('banner').hidden=!m.length;$('banner').innerHTML=m.map(x=>'<div>'+esc(x)+'</div>').join('')+(m.length?'<button class="btn" id="bnGo" type="button" style="margin-top:8px">Go to backup</button>':'');
+ $('bkStatus').textContent='Last backup: '+(S.lastBackup?new Date(S.lastBackup).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'never')+'. Saved months: '+Object.keys(S.data).length+'.'}
+$('banner').onclick=e=>{if(e.target.id=='bnGo')showTab('d')};
+$('bkDl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([makeBackup()],{type:'application/json'}));a.download='shiftpay-backup-'+today()+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);S.lastBackup=Date.now();save();updBanner()};
+function csvText(){const ks=Object.keys(S.data).sort(),n=Math.max(0,...ks.map(k=>S.data[k].acc.length)),names=[...Array(n)].map((_,i)=>{for(const k of ks.slice().reverse()){const a=S.data[k].acc[i];if(a)return a.n}return 'Account '+(i+1)}),q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+ const sl=[];ks.forEach(k=>(S.data[k].sum||[]).forEach(x=>{if(!sl.includes(x[0]))sl.push(x[0])}));
+ return '\ufeff'+[['Month','Salary in hand','Credit card to be paid','Estimated expenditure',...names.map(x=>x+' projected balance'),...sl.map(x=>'Summary: '+x)].map(q).join(',')].concat(ks.map(k=>[k,S.data[k].inHand,S.data[k].bill,S.data[k].exp,...names.map((_,i)=>S.data[k].acc[i]?S.data[k].acc[i].p:''),...sl.map(x=>{const r=(S.data[k].sum||[]).find(y=>y[0]==x);return r?r[1]:''})].map(q).join(','))).join('\n')}
+$('bkCsv').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvText()],{type:'text/csv'}));a.download='shiftpay-saved-months-'+today()+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)};
+function restoreFromText(txt){let o;try{o=JSON.parse(txt)}catch(e){return 'That is not a valid backup.'}
+ if(!o||o.app!=='shiftpay'||!o.state||typeof o.state!=='object'||Array.isArray(o.state))return 'That is not a Shift Pay backup.';
+ const when=o.exported?new Date(o.exported).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'an unknown date';
+ ask('Restore this backup?','This replaces everything now on this device with the backup made on '+when+'. Your current data will be lost unless you have downloaded a backup of it.','Restore backup',()=>{
+  const st={};for(const k of Object.keys(o.state))if(!['__proto__','constructor','prototype'].includes(k))st[k]=o.state[k];
+  for(const k in S)delete S[k];Object.assign(S,st);
+  if(storageOK){save();location.reload()}else{S.fy=S.fy||{};S.hol=S.hol||[];S.rest=S.rest||[];S.ot=S.ot||{};S.leave=S.leave||[];S.monthData=S.monthData||{};S.pm=S.pm||{};S.acc=S.acc||[];S.act=S.act||[];S.yr=S.yr||[];S.cards=S.cards||[];S.data=S.data||{};S.leaveCredits=S.leaveCredits||[];S.col={...DEF,...(S.col||{})};S.G=S.G||'A';S.mon=S.mon||defMon();S.div=208;S.otb=0;S.skip=true;S.rs=S.rs||'';S.re=S.re||'';S.ext=S.ext||0;S.ded=S.ded||0;fill();loadMonthFields();syncExp();run();updBanner();showTab('d')}});return ''}
+$('bkFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('bkMsg').textContent=restoreFromText(String(r.result))};r.readAsText(f);e.target.value=''};
+$('bkShow').onclick=()=>{$('bkText').value=makeBackup();$('bkText').select();try{document.execCommand('copy')}catch(e){}};
+$('bkRestoreText').onclick=()=>{$('bkMsg').textContent=restoreFromText($('bkText').value)};
+const showTab0=showTab;showTab=function(t){showTab0(t);updBanner()};
+updBanner();
+syncExp();
+if(!Object.keys(S.fy).length)setTimeout(openSetup,60);
+</script></body></html>
