@@ -224,7 +224,7 @@ function calc(i){
   if(R){const p=shiftOf(i.group,t-DAY);let a=0,b=0;if(s=='M')a+=8;if(s=='A'){a+=11-SH;b+=SH-3}if(s=='N')b+=8-SH;if(p=='N'){b+=6;a+=SH-6}sd+=a;sn+=b;sdA+=a*q.d;snA+=b*q.n}
   if(H){const h=hoursOn(i.group,t,SH);hol+=h;holA+=h*q.x;if(h==0){rest++;restA+=q.c}}
   const r=i.ram[0]&&t>=D(i.ram[0])&&t<=D(i.ram[1]);
-  if(r&&!(i.skip&&H&&(s=='M'||s=='A'))){let a=0,b=0;if(s=='M')a=2;if(s=='A')b=2;if(s=='N'){a=1;b=1}rd+=a;rn+=b;rdA+=a*q.d;rnA+=b*q.n}}
+  if(r&&!R&&!(i.skip&&H&&(s=='M'||s=='A'))){let a=0,b=0;if(s=='M')a=2;if(s=='A')b=2;if(s=='N'){a=1;b=1}rd+=a;rn+=b;rdA+=a*q.d;rnA+=b*q.n}}
  let mdH=0,mdA=0,maH=0,maA=0,mnH=0,mnA=0;
  if(i.otDays){const PMK=Y+'-'+String(M).padStart(2,'0'),lvAll=new Set(i.leave.map(l=>l.d));for(const k in i.otDays){const o=i.otDays[k];if(!o||o.pay=='wait'||(o.pay||pmOf(k))!=PMK||lvAll.has(k))continue;const q=Rt(D(k));mdH+=o.d||0;mdA+=(o.d||0)*q.d;maH+=o.a||0;maA+=(o.a||0)*q.n;mnH+=o.n||0;mnA+=(o.n||0)*q.n}}
  else{const q=Rt(end);mdH=i.dayOT||0;mdA=mdH*q.d;maH=i.aftOT||0;maA=maH*q.n;mnH=i.nightOT||0;mnA=mnH*q.n}
@@ -265,7 +265,7 @@ delete S.annualLeave;delete S.creditYear;
 if(S.v!=3){delete S.base;delete S.incs;S.v=3}
 const today=()=>new Date().toISOString().slice(0,10);
 const save=()=>{try{const prev=localStorage.getItem(SK);if(prev&&localStorage.getItem(SK+'_day')!==today()){localStorage.setItem(SK+'_snap',prev);localStorage.setItem(SK+'_day',today())}localStorage.setItem(SK,JSON.stringify(S))}catch(e){if(storageOK){storageOK=false;try{updBanner()}catch(e2){}}}};
-const fyOf=m=>+m.slice(0,4)-(+m.slice(5,7)<4?1:0),basicFor=m=>{const f=fyOf(m),ks=Object.keys(S.fy).map(Number).sort((a,b)=>a-b);if(!ks.length)return 0;const k=ks.filter(x=>x<=f).pop();return S.fy[k==null?ks[0]:k]},v=id=>parseFloat($(id).value)||0;
+const fyOf=m=>+m.slice(0,4)-(+m.slice(5,7)<4?1:0),basicFor=m=>{const f=fyOf(m),ks=Object.keys(S.fy).map(Number).sort((a,b)=>a-b);if(!ks.length)return 0;const k=ks.filter(x=>x<=f).pop();if(k==null&&S.fyb&&S.fyb[ks[0]]&&f==ks[0]-1)return S.fyb[ks[0]];return S.fy[k==null?ks[0]:k]},v=id=>parseFloat($(id).value)||0;
 S.ext=0;S.ded=0;const bind={mon:'mon'};S.otb=0;S.div=208;S.skip=true;
 for(const k in bind){$(k).value=S[k];$(k).addEventListener('input',()=>{S[k]=['mon','rs','re'].includes(k)?$(k).value:v(k);if(k=='mon')loadMonthFields();save();run()})}
 const moneyFields=['ticket','bonus','schoolclaim','companyloan','bankloan','rent'];
