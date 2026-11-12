@@ -79,7 +79,7 @@ details summary{cursor:pointer;font-weight:600}
 .exp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.exp-col{display:flex;flex-direction:column;gap:14px;min-width:0}.exp-col .exp-card{margin:0}@media(max-width:820px){.exp-grid{grid-template-columns:1fr}}.save-bar{display:flex;justify-content:flex-end;margin-top:14px}#dataTable th{white-space:normal}#dataTable td{white-space:nowrap}#dataTable tr.hi td{background:var(--accbg)}
 .banner{background:var(--card);border:2px solid var(--M);border-radius:12px;padding:10px 12px;margin:0 0 14px;font-size:14px}.bk{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.bk .btn{margin:0}textarea#bkText{min-height:90px;margin-top:8px}.foot{color:var(--mut);font-size:12px;margin:18px 0 0;text-align:center}
 </style></head><body><div class="wrap">
-<h1>Shift pay calculator</h1><p class="sub">Estimate your monthly salary and plan your expenditure. <span style="opacity:.55;font-size:11px">Version 11 Nov 2026 (G)</span></p>
+<h1>Shift pay calculator</h1><p class="sub">Estimate your monthly salary and plan your expenditure. <span style="opacity:.55;font-size:11px">Version 12 Nov 2026 (A)</span></p>
 <div id="banner" class="banner" hidden></div>
 <div class="page-tabs" role="tablist" aria-label="Calculator pages"><button type="button" id="salaryTab" role="tab" aria-selected="true" aria-controls="calc">Salary (Predicted)</button><button type="button" id="leaveTab" role="tab" aria-selected="false" aria-controls="leavepage">Leaves</button><button type="button" id="expenditureTab" role="tab" aria-selected="false" aria-controls="expenditure">Expenditure (Estimated)</button><button type="button" id="fxTab" role="tab" aria-selected="false" aria-controls="fxpage">Exchanges</button><button type="button" id="dataTab" role="tab" aria-selected="false" aria-controls="datapage">Data (Saved)</button></div>
 <div id="calc" role="tabpanel" aria-labelledby="salaryTab"><div class="grid"><div>
@@ -98,9 +98,9 @@ details summary{cursor:pointer;font-weight:600}
 
 <div class="card"><h2>Additional earnings and deductions</h2>
 <div class="row"><div><label for="ticket">Air ticket (KWD)</label><input id="ticket" type="number" min="0" step="0.001"></div><div><label for="bonus">Bonus (KWD)</label><input id="bonus" type="number" min="0" step="0.001"></div></div>
-<div class="row"><div><label for="schoolclaim">School fee claim (KWD)</label><input id="schoolclaim" type="number" min="0" step="0.001"></div><div><label for="companyloan">Company loan EMI (KWD)</label><input id="companyloan" type="number" min="0" step="0.001"></div></div>
-<div class="row"><div><label for="bankloan">Bank loan EMI (KWD)</label><input id="bankloan" type="number" min="0" step="0.001"></div><div><label for="rent">Rent (KWD)</label><input id="rent" type="number" min="0" step="0.001" placeholder="Enter rent amount"></div></div>
-<p class="sm">Air ticket, bonus and school fee claim are added to earnings. Company loan EMI is deducted from salary in hand. Bank loan EMI and rent are deducted afterward to show the remaining amount. Company loan EMI, bank loan EMI and rent repeat every month until you change them (type 0 when a loan ends).</p></div>
+<div class="row"><div><label for="schoolclaim">School fee claim (KWD)</label><input id="schoolclaim" type="number" min="0" step="0.001"></div><div><label for="companyloan">Company loan EMI (KWD)</label><input id="companyloan" type="number" min="0" step="0.001"><label class="salopt"><input type="checkbox" id="repCompanyloan" data-repm="companyloan"> Repeat in new months</label></div></div>
+<div class="row"><div><label for="bankloan">Bank loan EMI (KWD)</label><input id="bankloan" type="number" min="0" step="0.001"><label class="salopt"><input type="checkbox" id="repBankloan" data-repm="bankloan"> Repeat in new months</label></div><div><label for="rent">Rent (KWD)</label><input id="rent" type="number" min="0" step="0.001" placeholder="Enter rent amount"><label class="salopt"><input type="checkbox" id="repRent" data-repm="rent"> Repeat in new months</label></div></div>
+<p class="sm">Air ticket, bonus and school fee claim are added to earnings. Company loan EMI is deducted from salary in hand. Bank loan EMI and rent are deducted afterward to show the remaining amount. Every month starts at zero. Tick "Repeat in new months" under an item only if you want it copied into months you open later.</p></div>
 </div><div>
 <div class="top-actions"><button class="btn alt" id="cmon" type="button">clear</button><button class="btn alt reset-icon" id="rall" type="button" aria-label="Reset everything" title="Reset everything">↺</button></div>
 <div class="net"><small id="netl">Salary in hand</small><b id="net">0.000</b></div>
@@ -115,7 +115,7 @@ details summary{cursor:pointer;font-weight:600}
 <div class="row">
  <div><label for="leaveOpening">Opening leave balance</label><input id="leaveOpening" type="number" min="0" step="0.5" aria-label="Opening leave balance in days"></div>
 </div>
-<div class="row"><div><label for="leaveFrom">Opening balance as on</label><input id="leaveFrom" type="date"></div></div>
+<input id="leaveFrom" type="date" hidden tabindex="-1" aria-hidden="true">
 <p class="sm" style="margin:10px 0 0">Fridays and public holidays marked on the duty calendar are not deducted from vacation. Mark holidays on the calendar so they are skipped.</p></div>
 </div><div>
 <div class="card"><div class="leave-head"><h2>Leave records</h2><select id="lvYear" aria-label="Show year" style="width:auto"></select></div>
@@ -136,8 +136,7 @@ details summary{cursor:pointer;font-weight:600}
    <div class="exp-card"><h2>Accounts</h2><p class="hint">Accounts stay until you delete them. Balances and saving amounts carry forward. Type a new amount to replace the carried one.</p>
     <div id="accountList"></div><div class="exp-actions"><button class="btn" type="button" id="addAccount">+ Add account</button></div>
     <div class="exp-result"><span>Total opening balances</span><b id="accountBalanceTotal">0.000 KWD</b></div></div>
-   <div class="exp-card"><h2>Monthly expenses</h2><p class="hint">School fee, electricity and pocket money carry forward until you change them. Gift applies to this month only.</p>
-    <div class="row"><div><label for="exSchool">School fee</label><input id="exSchool" type="number" min="0" step="0.001"></div><div><label for="exElectricity">Electricity</label><input id="exElectricity" type="number" min="0" step="0.001"></div></div>
+   <div class="exp-card"><h2>Monthly expenses</h2><p class="hint">Gift and pocket money repeat every month until you change them. For a school fee, use Yearly payments below.</p>
     <div class="row"><div><label for="exGift">Gift</label><input id="exGift" type="number" min="0" step="0.001"></div><div><label for="exPocket">Pocket money</label><input id="exPocket" type="number" min="0" step="0.001"></div></div>
     <div class="exp-result"><span>Total monthly expenses</span><b id="monthlyTotal">0.000 KWD</b></div></div>
    <div class="exp-card" id="fxCard"><h2>Exchange money to India</h2><p class="hint">Use this only in a month when you send money. The amount is taken from the accounts you choose. It is not repeated next month.</p>
@@ -189,6 +188,7 @@ details summary{cursor:pointer;font-weight:600}
 <dialog id="idlg"><h2 style="margin:0 0 8px">Add increment</h2><p class="sm" style="margin:0 0 6px"><b>Financial year</b></p><div class="seg" id="iyr"><button type="button" data-y="0" aria-pressed="true"></button><button type="button" data-y="1" aria-pressed="false"></button></div><div class="seg" id="imode"><button type="button" data-m="p" aria-pressed="true">Percent</button><button type="button" data-m="a" aria-pressed="false">Amount</button></div>
 <label for="iv" id="ivl">Increment (%)</label><input id="iv" type="number" step="0.001" min="0"><p class="sm" id="iwhen"></p><p class="sm" id="iprev"></p>
 <div class="acts"><button class="btn" id="isave" type="button">Apply</button><button class="btn alt" id="icancel" type="button">Cancel</button></div></dialog>
+<dialog id="lodlg"><h2 style="margin:0 0 6px">Opening balance date</h2><p class="sm" id="lomsg"></p><label for="lodate">Balance as on</label><input id="lodate" type="date"><p class="neg sm" id="loerr"></p><div class="acts"><button class="btn" id="losave" type="button">Save</button><button class="btn alt" id="locancel" type="button">Cancel</button></div></dialog>
 <dialog id="cdlg"><h2 id="ct" style="margin:0 0 8px"></h2><p id="cb" style="font-size:14px;margin:0"></p><div class="acts"><button class="btn alt" id="cno" type="button" autofocus>Cancel</button><button class="btn alt danger" id="cyes" type="button"></button></div></dialog>
 <dialog id="sdlg"><h2 style="margin:0 0 6px">Set up</h2><p class="foot" style="margin:0 0 6px">Saved only on this device. You can change these later.</p>
 <label>Shift timing</label><div class="seg" id="sSh"></div>
@@ -244,7 +244,7 @@ const MN='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),dm=k=>k.sl
 const defMon=()=>{const d=new Date();let y=d.getFullYear(),m=d.getMonth()+1;if(d.getDate()>=19){m++;if(m>12){m=1;y++}}return y+'-'+String(m).padStart(2,'0')};
 const S={fy:{},hol:[],ot:{},leave:[],G:'A',sh:7,mon:defMon(),rs:'',re:'',ext:0,ded:0,div:208,otb:0,skip:true,monthData:{},leaveOpening:0,annualLeave:0,creditYear:+defMon().slice(0,4)+1};
 S.monthData=S.monthData||{};S.leaveOpening=S.leaveOpening??S.leaveTotal??0;S.annualLeave=S.annualLeave??0;S.creditYear=S.creditYear??2027;
-const md=()=>{if(!S.monthData[S.mon]){const prev=Object.keys(S.monthData).filter(k=>k<S.mon).sort().pop(),p=prev?S.monthData[prev]:{};S.monthData[S.mon]={ticket:0,bonus:0,schoolclaim:0,companyloan:p.companyloan??0,bankloan:p.bankloan??0,rent:p.rent??0}}return S.monthData[S.mon]};
+const md=()=>{if(!S.monthData[S.mon]){const prev=Object.keys(S.monthData).filter(k=>k<S.mon).sort().pop(),p=prev?S.monthData[prev]:{};const R=S.rep||{};S.monthData[S.mon]={ticket:0,bonus:0,schoolclaim:0,companyloan:R.companyloan?(p.companyloan??0):0,bankloan:R.bankloan?(p.bankloan??0):0,rent:R.rent?(p.rent??0):0}}return S.monthData[S.mon]};
 const SK='shiftpay';let storageOK=true,loadMsg='';
 try{localStorage.setItem(SK+'_t','1');localStorage.removeItem(SK+'_t')}catch(e){storageOK=false}
 try{const raw=localStorage.getItem(SK);if(raw){try{const o=JSON.parse(raw);for(const k of Object.keys(o))if(!['__proto__','constructor','prototype'].includes(k))S[k]=o[k]}catch(e){
@@ -277,10 +277,17 @@ function leaveBalance(raw,upto){const st=S.leaveFrom;if(!st)return null;
  for(let y=+st.slice(0,4)+1;y<=+upto.slice(0,4);y++)b+=S.leaveCredits.filter(c=>y>=c.startYear).reduce((n,c)=>n+(+c.days||0),0);
  b-=S.leave.filter(l=>l.t=='vac'&&l.d>=st&&l.d<=upto&&(!S.leaveFri||(new Date(D(l.d)).getUTCDay()!==5&&!S.hol.includes(l.d)))).length;
  return raw?b:Math.max(0,b)}
-function loadMonthFields(){const x=md();moneyFields.forEach(k=>$(k).value=x[k]??0);$('leaveOpening').value=S.leaveOpening;$('leaveFrom').value=S.leaveFrom||'';refreshLeaveEntitlement()}
+function loadMonthFields(){const x=md();moneyFields.forEach(k=>$(k).value=x[k]??0);['companyloan','bankloan','rent'].forEach(k=>{const el=$('rep'+k[0].toUpperCase()+k.slice(1));if(el)el.checked=!!(S.rep||{})[k]});$('leaveOpening').value=S.leaveOpening;$('leaveFrom').value=S.leaveFrom||'';refreshLeaveEntitlement()}
 function refreshLeaveEntitlement(){const b=leaveBalance(),r=leaveBalance(true);$('leaveBal').textContent=b==null?'–':b.toFixed(1);$('balbox').classList.toggle('neg',r!=null&&r<0);$('leaveBalNote').textContent=b==null?'Enter the opening balance and its date in Leave entitlement.':(r<0?'days. Vacation taken is more than the entitlement.':'days left after all recorded leave')}
 for(const k of moneyFields)$(k).addEventListener('input',()=>{md()[k]=v(k);save();run()});
-$('leaveOpening').addEventListener('input',()=>{S.leaveOpening=Math.max(0,v('leaveOpening'));if(!S.leaveFrom){S.leaveFrom=today();$('leaveFrom').value=S.leaveFrom}save();refreshLeaveEntitlement();chips()});
+[['repCompanyloan','companyloan'],['repBankloan','bankloan'],['repRent','rent']].forEach(([id,k])=>$(id).addEventListener('change',()=>{S.rep=S.rep||{};S.rep[k]=$(id).checked;save()}));
+let loPend=null,loOk=false;
+$('leaveOpening').addEventListener('change',()=>{const nv=Math.max(0,v('leaveOpening'));if(nv===(+S.leaveOpening||0))return;
+ if(nv===0&&!S.leaveFrom){S.leaveOpening=0;save();refreshLeaveEntitlement();chips();return}
+ loPend=nv;loOk=false;$('lomsg').textContent='Your leave balance of '+nv+' days is correct as on which date? Vacation before this date is not deducted again.';$('lodate').value='';$('loerr').textContent='';$('lodlg').showModal()});
+$('losave').onclick=()=>{const d=$('lodate').value;if(!d){$('loerr').textContent='Choose the date.';return}S.leaveOpening=loPend;S.leaveFrom=d;loOk=true;$('leaveFrom').value=d;save();$('lodlg').close();refreshLeaveEntitlement();chips();run()};
+$('locancel').onclick=()=>$('lodlg').close();
+$('lodlg').addEventListener('close',()=>{if(!loOk)$('leaveOpening').value=S.leaveOpening;loPend=null});
 $('leaveFrom').addEventListener('input',()=>{S.leaveFrom=$('leaveFrom').value;save();refreshLeaveEntitlement();chips()});
 $('leaveReset').onclick=()=>ask('Reset leave entitlement?','This clears the opening balance and all additional annual leave credits. Your recorded vacation, sick and compassionate leave dates will remain unchanged.','Reset entitlement',()=>{S.leaveOpening=0;S.leaveFrom='';S.leaveCredits=[];loadMonthFields();save();run()});
 $('leaveAddOpen').onclick=()=>{const y=+S.mon.slice(0,4)+1;$('newLeaveDays').value='';$('leaveCreditInfo').textContent='Any leave added here will be credited on 1 January each year, starting 1 January '+y+'.';$('leaveDlg').showModal()};
@@ -324,7 +331,7 @@ const LT={vac:'Vacation',sick:'Sick',comp:'Compassionate'},LH={vac:'Reduces the 
 const payMon=k=>{let y=+k.slice(0,4),m=+k.slice(5,7);if(+k.slice(8)>=19){m++;if(m>12){m=1;y++}}return y+'-'+String(m).padStart(2,'0')},monLab=m=>MN[+m.slice(5)-1]+' '+m.slice(0,4);
 const spanTxt=(a,b)=>a==b?dm(a)+' '+a.slice(0,4):a.slice(0,4)==b.slice(0,4)?dm(a)+' to '+dm(b)+' '+b.slice(0,4):dm(a)+' '+a.slice(0,4)+' to '+dm(b)+' '+b.slice(0,4);
 const DPAIR={le:'ld',re2:'rs2',lve:'lvs'};
-['ld','le','leaveFrom','lvs','lve','rs2','re2'].forEach(id=>{const el=$(id);if(!el)return;let anc='',touched=false;
+['ld','le','leaveFrom','lvs','lve','rs2','re2','lodate','fxDate'].forEach(id=>{const el=$(id);if(!el)return;let anc='',touched=false;
  el.addEventListener('pointerdown',()=>{if(el.value)return;const fr=DPAIR[id]&&$(DPAIR[id])?$(DPAIR[id]).value:'';let d=fr||S.mon+'-18';if(el.min&&d<el.min)d=el.min;anc=d;touched=false;el.value=d});
  el.addEventListener('input',()=>{touched=true});el.addEventListener('change',()=>{touched=true});
  el.addEventListener('blur',()=>{if(anc&&!touched&&el.value===anc)el.value='';anc=''})});
@@ -408,12 +415,12 @@ applyCols();chips();run();
 
 // EXPENDITURE PAGE: month by month, built on the salary result.
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-const REC=['school','elec','pocket'],FM={exSchool:'school',exElectricity:'elec',exGift:'gift',exPocket:'pocket'};
+const REC=['gift','pocket'],FM={exGift:'gift',exPocket:'pocket'};
 if(S.acc.length&&!S.salAcc)S.salAcc=S.acc[S.acc.length-1].id;
 const ensureSal=()=>{if(!S.acc.some(a=>a.id==S.salAcc))S.salAcc=S.acc.length?S.acc[0].id:'';return S.salAcc};
 const rec=()=>S.pm[S.mon]=S.pm[S.mon]||{open:{},add:{},cc:{}},sumA=l=>l.reduce((s,x)=>s+(parseFloat(x.amount??x.a)||0),0),valOf=id=>$(id).value===''?null:Math.max(0,parseFloat($(id).value)||0);
 const back=g=>{let k=pk(S.mon);for(let i=0;i<36;i++,k=pk(k)){const x=g(S.pm[k]);if(x!=null)return x}return null};
-const eff=f=>S.pm[S.mon]?.[f]??(REC.includes(f)?(back(r=>r?.[f])??0):0),effAdd=id=>S.pm[S.mon]?.add?.[id]??((S.acc.find(a=>a.id==id)||{}).rep===false?0:(x=>x>0?x:0)(back(r=>r?.add?.[id]??r?.addc?.[id])))??0,effCc=id=>S.pm[S.mon]?.cc?.[id]??back(r=>r?.cc?.[id]);
+const eff=f=>S.pm[S.mon]?.[f]??(REC.includes(f)?(back(r=>r?.[f])??0):0),effAdd=id=>S.pm[S.mon]?.add?.[id]??0,effCc=id=>S.pm[S.mon]?.cc?.[id];
 const setF=(f,x)=>{const r=rec();if(x==null)delete r[f];else r[f]=x};
 const setIn=(o,id,x)=>{const r=rec();r[o]=r[o]||{};if(x==null)delete r[o][id];else r[o][id]=x};
 let LAST=null,hiMonth='',ACCROWS=[];
@@ -446,11 +453,11 @@ $('fxCsv').onclick=()=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"',L2=[
 function renderCards(){$('cardList').innerHTML=S.cards.map(c=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(c.name)}</div><div class="row"><div><label for="cl_${c.id}">Total limit (KWD)</label><input id="cl_${c.id}" type="number" min="0" step="0.001" data-limit="${c.id}" value="${esc(c.limit??'')}" placeholder="0.000"></div><div><label for="cr_${c.id}">Limit left (KWD)</label><input id="cr_${c.id}" type="number" min="0" step="0.001" data-rem="${c.id}" value="${esc(S.pm[S.mon]?.cc?.[c.id]??'')}" placeholder="${effCc(c.id)==null?'0.000':f3(effCc(c.id))}"></div></div></div><div class="entry-tools"><button type="button" class="delete-entry" data-cdel="${c.id}" title="Delete card" aria-label="Delete ${esc(c.name)}">×</button></div></div>`).join('')}
 function renderAccounts(){const prev=S.pm[pk(S.mon)]?.res||{},r0=S.pm[S.mon]||{},sal=ensureSal(),multi=S.acc.length>1;
  $('accountList').innerHTML=S.acc.map(c=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(c.name)}</div>${multi?`<label class="salopt"><input type="radio" name="salacc" data-sal="${c.id}"${c.id==sal?' checked':''}> Salary account (keeps the money that is left)</label>`:''}<label for="op_${c.id}">Opening balance this month (KWD)</label><input id="op_${c.id}" type="number" min="0" step="0.001" data-open="${c.id}" value="${esc(r0.open?.[c.id]??'')}" placeholder="${f3(prev[c.id]||0)}"><p class="hint" style="margin:4px 0 0">Leave empty to use the plan. Type the real bank balance to see the difference on the Data page.</p></div><div class="entry-tools"><button type="button" class="delete-entry" data-adel="${c.id}" title="Delete account" aria-label="Delete ${esc(c.name)}">×</button></div></div>`).join('');
- $('allocList').innerHTML=S.acc.map(c=>{const last=c.id==sal;return`<div class="allocation-row"><div class="allocation-name"><b>${esc(c.name)}</b><span>Opening: <i id="ao_${c.id}"></i> KWD</span></div><div class="allocation-input"><div class="proj-label">Projected balance</div><div class="proj" id="ac_${c.id}"></div>${last?`<div class="allocation-value" id="aa_${c.id}"></div><p class="sm" id="ax_${c.id}" style="margin:4px 0 0"></p>`:`${(r0.add?.[c.id]??0)<0?`<p class="allocation-value" style="margin:8px 0 4px">Transferred to the salary account: <b>${f3(-r0.add[c.id])} KWD</b></p><div class="bk"><button class="btn alt" type="button" data-tchg="${c.id}">Change</button><button class="btn alt" type="button" data-trm="${c.id}">Remove</button></div>`:`<label>Projected balance you want (KWD)</label><input type="number" min="0" step="0.001" data-tgt="${c.id}" value="${esc(r0.tgt?.[c.id]??'')}" placeholder="Leave empty to repeat the last credit"><p class="allocation-value" id="ad_${c.id}" style="margin:6px 0 4px"></p><p class="sm" id="ax_${c.id}" style="margin:0 0 4px"></p><label class="salopt"><input type="checkbox" data-rep="${c.id}"${c.rep===false?'':' checked'}> Repeat the last credit when I leave the balance empty</label><button class="linkbtn" type="button" data-tchg="${c.id}">Transfer to the salary account instead</button>`}`}</div></div>`}).join('')}
+ $('allocList').innerHTML=S.acc.map(c=>{const last=c.id==sal;return`<div class="allocation-row"><div class="allocation-name"><b>${esc(c.name)}</b><span>Opening: <i id="ao_${c.id}"></i> KWD</span></div><div class="allocation-input"><div class="proj-label">Projected balance</div><div class="proj" id="ac_${c.id}"></div>${last?`<div class="allocation-value" id="aa_${c.id}"></div><p class="sm" id="ax_${c.id}" style="margin:4px 0 0"></p>`:`${(r0.add?.[c.id]??0)<0?`<p class="allocation-value" style="margin:8px 0 4px">Transferred to the salary account: <b>${f3(-r0.add[c.id])} KWD</b></p><div class="bk"><button class="btn alt" type="button" data-tchg="${c.id}">Change</button><button class="btn alt" type="button" data-trm="${c.id}">Remove</button></div>`:`<label>Projected balance you want (KWD)</label><input type="number" min="0" step="0.001" data-tgt="${c.id}" value="${esc(r0.tgt?.[c.id]??'')}" placeholder="Leave empty if no credit or debit is needed"><p class="allocation-value" id="ad_${c.id}" style="margin:6px 0 4px"></p><p class="sm" id="ax_${c.id}" style="margin:0 0 4px"></p><button class="linkbtn" type="button" data-tchg="${c.id}">Transfer to the salary account instead</button>`}`}</div></div>`}).join('')}
 function renderActs(){$('activityList').innerHTML=S.act.map((a,i)=>`<div class="activity-row"><div class="entry-main"><div class="entry-title">${esc(a.name)}</div><label for="am${i}">Monthly amount (KWD)</label><input id="am${i}" type="number" min="0" step="0.001" data-act="${i}" value="${esc(a.amount??'')}" placeholder="0.000"></div><div class="entry-tools"><button type="button" class="delete-entry" data-adl="${i}" title="Delete activity" aria-label="Delete ${esc(a.name)}">×</button></div></div>`).join('')}
 function renderYr(){$('yrl').innerHTML=S.yr.map((y,i)=>`<span class="chip">${esc(y.n)}: ${f3(y.a)}, ${MN[+y.m.slice(5)-1]} ${y.m.slice(0,4)} <button type="button" aria-label="Remove" data-yd="${i}">×</button></span>`).join('')}
 function renderTotals(){
- const m1=md(),pr0=calc(args()),loans=(m1.bankloan||0)+(m1.rent||0),inHand=pr0.net,left=inHand-loans,mon=['school','elec','gift','pocket'].reduce((s,f)=>s+eff(f),0),acts=sumA(S.act),
+ const m1=md(),pr0=calc(args()),loans=(m1.bankloan||0)+(m1.rent||0),inHand=pr0.net,left=inHand-loans,mon=['gift','pocket'].reduce((s,f)=>s+eff(f),0),acts=sumA(S.act),
  bill=S.cards.reduce((s,c)=>{const r=effCc(c.id);return s+(r==null?0:Math.max(0,(parseFloat(c.limit)||0)-r))},0),yo=sumA(S.yr.filter(y=>y.m==S.mon)),exp=mon+acts+bill+yo,avail=left-exp,r0=S.pm[S.mon]||{},prev=S.pm[pk(S.mon)]?.res||{};
  let typed=0,proj=0,open=0;const sal=ensureSal();const rows=S.acc.map(c=>{const last=c.id==sal,o=r0.open?.[c.id]??prev[c.id]??0,fx=fxA(c.id),tg=r0.tgt?.[c.id],add=last?0:(tg!=null?Math.round((tg-(o-fx))*1000)/1000:effAdd(c.id));if(!last)typed+=add;const d=(r0.open?.[c.id]!=null&&prev[c.id]!=null)?r0.open[c.id]-prev[c.id]:null;return{c,last,o,add,d,fx,tg}});
  rows.forEach(r=>{if(r.last)r.add=(Math.round((avail-typed)*1000)/1000)||0;r.cl=Math.round((r.o+r.add-r.fx)*1000)/1000;proj+=r.cl;open+=r.o});ACCROWS=rows;
@@ -462,7 +469,7 @@ function renderTotals(){
  $('setAside').textContent=f3(aside/12)+' KWD';$('accountBalanceTotal').textContent=f3(open)+' KWD';
  const salName=(rows.find(x=>x.last)||{c:{name:'the salary account'}}).c.name;
  rows.forEach(r=>{const id=r.c.id;$('ao_'+id).textContent=f3(r.o);$('ac_'+id).textContent=f3(r.cl)+' KWD';if(r.last)$('aa_'+id).textContent='Remainder added: '+f3(r.add)+' KWD';
-  const ad=$('ad_'+id);if(ad){const a=r.add,rp=r.tg==null&&a>0.0005?' (repeating the last credit)':'';ad.innerHTML=a>0.0005?`<b>Credit ${f3(a)} KWD</b>: move it from ${esc(salName)} to ${esc(r.c.name)}${rp}`:a<-0.0005?`<b class="neg">Debit ${f3(-a)} KWD</b>: move it from ${esc(r.c.name)} to ${esc(salName)}`:'No credit or debit needed.'}
+  const ad=$('ad_'+id);if(ad){const a=r.add,rp='';ad.innerHTML=a>0.0005?`<b>Credit ${f3(a)} KWD</b>: move it from ${esc(salName)} to ${esc(r.c.name)}${rp}`:a<-0.0005?`<b class="neg">Debit ${f3(-a)} KWD</b>: move it from ${esc(r.c.name)} to ${esc(salName)}`:'No credit or debit needed.'}
   const ax=$('ax_'+id);if(ax)ax.textContent=r.fx>0?'Exchange to India from this account: −'+f3(r.fx)+' KWD':'';
   const fh=$('ffh_'+id);if(fh)fh.textContent='Projected balance '+f3(r.cl)+' KWD'});
  const fxTot=fxMon().reduce((a,x)=>a+x.kwd,0);
@@ -476,7 +483,7 @@ function renderTotals(){
  const neg=rows.filter(r=>r.cl<0).map(r=>r.c.name);if(neg.length)msg+=(msg?' ':'')+(neg.join(', ')+' would go below zero.');
  $('short').textContent=msg;$('short').className=(SHORT.need||neg.length)?'neg':'sm';$('shortAct').innerHTML=(SHORT.need&&all.some(x=>x.max>0.0005))?'<button class="btn" type="button" id="tpop">Transfer money to the salary account</button>':''}
 function syncExp(){const r=S.pm[S.mon]||{};for(const id in FM){const f=FM[id];$(id).value=r[f]??'';$(id).placeholder=REC.includes(f)?f3(eff(f)):'0.000'}
- $('yrmn').value=S.mon;if(!$('fxDate').value)$('fxDate').value=today();if(!$('fxRate').value&&S.fxRate)$('fxRate').value=S.fxRate;fxFill();renderCards();renderAccounts();renderActs();renderYr();renderFxFrom();renderFxList();renderTotals()}
+ $('yrmn').value=S.mon;if(!$('fxRate').value&&S.fxRate)$('fxRate').value=S.fxRate;fxFill();renderCards();renderAccounts();renderActs();renderYr();renderFxFrom();renderFxList();renderTotals()}
 const sg=x=>(x<0?'−':x>0?'+':'')+f3(Math.abs(x));
 function diffCell(d){const a=d.acc.filter(x=>x.d!=null&&x.d!==undefined);if(!a.length)return'–';const t=a.reduce((n,x)=>n+x.d,0);return`<b class="${t<0?'neg':''}">${sg(t)}</b>`+(a.length>1?a.map(x=>`<div class="sm">${esc(x.n)} ${sg(x.d)}</div>`).join(''):'')}
 const DET=new Set();
@@ -510,7 +517,7 @@ $('expenditure').addEventListener('change',()=>setTimeout(checkShort,80));
 $('entryConfirm').addEventListener('click',()=>setTimeout(checkShort,150));
 $('shortAct').addEventListener('click',e=>{if(e.target.id=='tpop')openTransfer(null)});
 $('allocList').addEventListener('click',e=>{const c=e.target.dataset.tchg,r=e.target.dataset.trm;if(c)openTransfer(c);if(r){setIn('add',r,null);setIn('tgt',r,null);save();renderAccounts();renderTotals()}});
-$('allocList').addEventListener('change',e=>{const id=e.target.dataset.rep;if(!id)return;const c=S.acc.find(x=>x.id==id);if(c){c.rep=e.target.checked;save();renderAccounts();renderTotals()}});
+
 $('accountList').addEventListener('click',e=>{const id=e.target.dataset.adel;if(!id)return;const c=S.acc.find(x=>x.id==id);ask('Delete account?','This removes '+(c?c.name:'the account')+' from every month.','Delete account',()=>{S.acc=S.acc.filter(x=>x.id!=id);ensureSal();save();syncExp()})});
 $('activityList').addEventListener('input',e=>{const i=e.target.dataset.act;if(i==null)return;S.act[+i].amount=e.target.value===''?'':Math.max(0,parseFloat(e.target.value)||0);save();renderTotals()});
 $('activityList').addEventListener('click',e=>{const i=e.target.dataset.adl;if(i==null)return;const a=S.act[+i];ask('Delete activity?','This removes '+(a?a.name:'the activity')+' from every month.','Delete activity',()=>{S.act.splice(+i,1);save();renderActs();renderTotals()})});
